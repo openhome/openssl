@@ -200,7 +200,7 @@ my %table=(
 "dist",		"cc:-O::(unknown)::::::",
 
 # rtems ppc
-"powerpc-rtems", "powerpc-rtems4.9-gcc:-DNO_BIO -DNO_STDIO -O3 -Wall -DTERMIOS -DNOSTRINGSH=1::-D_REENTRANT:RTEMS:",
+"powerpc-rtems", "powerpc-rtems4.9-gcc:-DNO_BIO -DNO_STDIO -O3 -Wall -DTERMIOS -DOPENSSL_IMPLEMENTS_strncasecmp::-D_REENTRANT:RTEMS:",
 "armv5-freertos", "arm-rtemseabi4.11-gcc:-march=armv5te -O3 -Wall -DOPENSSL_NO_STDIO -DNO_SYSLOG -DL_ENDIAN -DOPENSSL_IMPLEMENTS_strncasecmp::-D_REENTRANT:FREERTOS:",
 
 # Basic configs that should work on any (32 and less bit) box
