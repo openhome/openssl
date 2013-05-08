@@ -199,6 +199,10 @@ my %table=(
 "debug-linux-x86_64","gcc:-DBN_DEBUG -DREF_CHECK -DCONF_DEBUG -DCRYPTO_MDEBUG -m64 -DL_ENDIAN -DTERMIO -g -Wall::-D_REENTRANT::-ldl:SIXTY_FOUR_BIT_LONG RC4_CHUNK DES_INT DES_UNROLL:${x86_64_asm}:elf:dlfcn:linux-shared:-fPIC:-m64:.so.\$(SHLIB_MAJOR).\$(SHLIB_MINOR):::64",
 "dist",		"cc:-O::(unknown)::::::",
 
+# rtems ppc
+"powerpc-rtems", "powerpc-rtems4.9-gcc:-DNO_BIO -DNO_STDIO -O3 -Wall -DTERMIOS -DNOSTRINGSH=1::-D_REENTRANT:RTEMS:",
+"armv5-freertos", "arm-rtemseabi4.11-gcc:-march=armv5te -O3 -Wall -DOPENSSL_NO_STDIO -DNO_SYSLOG -DL_ENDIAN -DOPENSSL_IMPLEMENTS_strncasecmp::-D_REENTRANT:FREERTOS:",
+
 # Basic configs that should work on any (32 and less bit) box
 "gcc",		"gcc:-O3::(unknown):::BN_LLONG:::",
 "cc",		"cc:-O::(unknown)::::::",
