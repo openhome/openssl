@@ -88,17 +88,17 @@ def createtargz(aArch, aRelease):
         print 'Error: Unknown arch:', aArch
         exit(1)
 
-    debug = ''
+    debugtag = ''
     if (aRelease == 'debug'):
-        debug = 'debug'
+        debugtag = '-debug'
 
-    tarname = os.path.join(builddir, openssl+'-include-'+aArch+'-debug.tar.bz2')
+    tarname = os.path.join(builddir, openssl+'-include-'+aArch+debugtag+'.tar.bz2')
     print 'Creating ', tarname
     tar = tarfile.open(tarname, 'w:bz2')
     tar.add(os.path.join(builddir, aArch, 'include', 'openssl'), arcname='openssl')
     tar.close()
 
-    tarname = os.path.join(builddir,openssl+'-lib-'+aArch+'-debug.tar.bz2')
+    tarname = os.path.join(builddir,openssl+'-lib-'+aArch+debugtag+'.tar.bz2')
     print 'Creating ', tarname
     tar = tarfile.open(tarname, 'w:bz2')
     tar.add(os.path.join(builddir, aArch, 'lib', cryptolib), arcname=cryptolib)
