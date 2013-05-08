@@ -622,11 +622,11 @@ static unsigned int _strlen31(const char *str)
  * versions.
  */
 #  if !defined(OPENSSL_USE_IPV6)
-#    if defined(AF_INET6) && !defined(OPENSSL_SYS_BEOS_BONE) && !defined(NETWARE_CLIB)
-#      define OPENSSL_USE_IPV6 1
-#    else
+//#    if defined(AF_INET6) && !defined(OPENSSL_SYS_BEOS_BONE) && !defined(NETWARE_CLIB)
+//#      define OPENSSL_USE_IPV6 1
+//#    else
 #      define OPENSSL_USE_IPV6 0
-#    endif
+//#    endif
 #  endif
 
 #endif
