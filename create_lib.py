@@ -5,7 +5,7 @@ import subprocess
 import sys
 import tarfile
 
-openssl = 'openssl-1.0.0d'
+openssl = 'openssl-1.0.1e'
 
 builddir = os.path.join(os.getcwd(), 'build')
 print 'Building to', builddir
