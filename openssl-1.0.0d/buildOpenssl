@@ -1,0 +1,26 @@
+#! /bin/bash -xe
+
+arch=$1
+if [ "$arch" != "arm" ] && [ "$arch" != "powerpc" ]; then
+    echo "Usage: $0 (arm|powerpc)"
+    exit 1
+fi
+
+case "$arch" in
+"arm")
+    PATH=/opt/rtems-4.11/bin:${PATH}
+    options="armv5-freertos -msoft-float -fexceptions -pipe -g3 -Wno-psabi -mapcs -fno-omit-frame-pointer -I`pwd`/../../../install/include/trace"
+    ;;
+
+"powerpc")
+    PATH=/opt/rtems-4.9/bin:${PATH}
+    options="powerpc-rtems -mcpu=403 -msoft-float -fexceptions -pipe -g3 -I`pwd`/../../../install/include/trace/rtems/include"
+    ;;
+esac
+
+# -I`pwd`/../../rtems/rtems49-src/cpukit/libnetworking 
+# -I`pwd`/../../rtems/rtems49-src/cpukit/include -I`pwd`/../../rtems/rtems49-src/cpukit/libcsupport/include
+
+perl ./Configure --prefix=install/${arch} ${options}
+make INSTALL_PREFIX=`pwd`/ DIRS="crypto" all install_sw
+
