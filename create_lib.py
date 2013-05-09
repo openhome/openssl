@@ -86,7 +86,9 @@ def configure(aArch, aRelease):
     elif (aArch == 'Linux-x64'):
         platform = 'linux-generic64'
     elif (aArch == 'Linux-ARM'):
-        pass    # find compiler option/location for this and add to Configure file
+        # find compiler option/location for this and add to OpenSSL Configure file
+        print 'Error: Linux-ARM target not yet defined'
+        exit(1)
     elif (aArch == 'Core-armv6'):
         platform = 'armv5-freertos'
         options = ['-msoft-float', '-fexceptions', '-pipe', '-g3', '-Wno-psabi', '-mapcs', '-fno-omit-frame-pointer', '-I'+os.path.join(workingdir, 'include'), '-I'+os.path.join(workingdir, 'include', 'lwip'), '-I'+os.path.join(workingdir, 'include', 'lwip', 'posix')]
