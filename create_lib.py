@@ -8,6 +8,8 @@ import sys
 import tarfile
 
 openssl = 'openssl-1.0.0d'
+rtems = 'rtems49-virtex'
+freertos = 'FreertosLwip'
 
 builddir = os.path.join(os.getcwd(), 'build')
 workingdir = os.getcwd()
@@ -38,13 +40,13 @@ def copy_files(src, dst_folder):
 
 def install_headers(aArch):
     # set up include directory
-    if not os.path.exists(os.path.join(workingdir, 'include')):
-        os.mkdir(os.path.join(workingdir, 'include'))
+    includedir = os.path.join(workingdir, 'include')
+    if not os.path.exists(includedir):
+        os.mkdir(includedir)
 
     if (aArch in ['Core-armv6', 'Core-ppc32']):
         # copy freertos headers
-        freertosdir = os.path.join(workingdir, 'FreertosLwip')
-        includedir = os.path.join(workingdir, 'include')
+        freertosdir = os.path.join(workingdir, freertos)
         copy_files(os.path.join(freertosdir, 'arch', 'lwippools.h'), os.path.join(includedir, 'lwip'))
         copy_files(os.path.join(freertosdir, 'lwip', 'src', 'include', 'ipv4', 'lwip', '*.h'), os.path.join(includedir, 'lwip'))
         copy_files(os.path.join(freertosdir, 'lwip', 'src', 'include', 'lwip', '*.h'), os.path.join(includedir, 'lwip'))
@@ -58,6 +60,12 @@ def install_headers(aArch):
         elif (aArch == 'Core-ppc32'):
             copy_files(os.path.join(freertosdir, 'arch', 'PowerPC', 'lwipopts.h'), os.path.join(includedir, 'lwip'))
             copy_files(os.path.join(freertosdir, 'arch', 'PowerPC', 'cc.h'), os.path.join(includedir, 'lwip', 'arch'))
+
+    if (aArch == 'Core-ppc32'):
+        #copy rtems headers
+        rtemsdir = os.path.join(workingdir, rtems)
+        if not os.path.exists(os.path.join(includedir, rtems)):
+            shutil.copytree(os.path.join(rtemsdir, 'include'), os.path.join(includedir, rtems))
 
 def configure(aArch, aRelease):
     print 'Configuring for', aArch, aRelease
@@ -85,7 +93,7 @@ def configure(aArch, aRelease):
         os.environ['PATH'] += os.pathsep + '/opt/rtems-4.11/bin'
     elif (aArch == 'Core-ppc32'):
         platform = 'powerpc-rtems'
-        options = ['-mcpu=403', '-msoft-float', '-fexceptions', '-pipe', '-g3', '-I'+os.path.join(workingdir, 'include', 'rtems49-virtex', 'include')]
+        options = ['-mcpu=403', '-msoft-float', '-fexceptions', '-pipe', '-g3', '-I'+os.path.join(workingdir, 'include', 'rtems49-virtex')]
         os.environ['PATH'] += os.pathsep + '/opt/rtems-4.9/bin'
     else:
         print 'Error: Unknown arch:', aArch
