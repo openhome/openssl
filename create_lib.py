@@ -72,12 +72,22 @@ def configure(aArch, aRelease):
 
     platform = ''
     options = []
+    # options = ['no-idea', 'no-camellia', 'no-seed', 'no-bf', 'no-cast'
+                # , 'no-des', 'no-rc2', 'no-rc4', 'no-rc5', 'no-md2', 'no-md4'
+                # , 'no-md5', 'no-ripemd', 'no-mdc2', 'no-rsa', 'no-dsa', 'no-dh'
+                # , 'no-ec', 'no-ecdsa', 'no-ecdh', 'no-sock', 'no-ssl2'
+                # , 'no-ssl3', 'no-krb5', 'no-engine', 'no-hw', 'no-bio', 'no-bf'
+                # , 'no-gmp', 'no-gost', 'no-jpake', 'no-rfc3779', 'no-shared'
+                # , 'no-store', 'no-tls1', 'no-tlsext', 'no-zlib', 'no-zlib-dynamic'
+                #, 'no-asm', 'no-hmac', 'no-lhash', 'no-evp', 'no-stack', 'no-rand'
+                #, 'no-dso', 'no-asn1', 'no-pem', 'no-x509', 'no-x509-v3', 'no-err']
+    #options += ['no-err']
     debug_prefix = ''
     if (aRelease == 'debug'):
         debug_prefix = 'debug-'
     if (aArch == 'Windows-x86'):
         platform = 'VC-WIN32'
-        options = ['no-asm']
+        options = options + ['no-asm']
     elif (aArch == 'Windows-x64'):
         platform = 'VC-WIN64A'
         options = ['no-asm']
@@ -91,11 +101,11 @@ def configure(aArch, aRelease):
         exit(1)
     elif (aArch == 'Core-armv6'):
         platform = 'armv5-freertos'
-        options = ['-msoft-float', '-fexceptions', '-pipe', '-g3', '-Wno-psabi', '-mapcs', '-fno-omit-frame-pointer', '-I'+os.path.join(workingdir, 'include'), '-I'+os.path.join(workingdir, 'include', 'lwip'), '-I'+os.path.join(workingdir, 'include', 'lwip', 'posix')]
+        options = options + ['-msoft-float', '-fexceptions', '-pipe', '-g3', '-Wno-psabi', '-mapcs', '-fno-omit-frame-pointer', '-I'+os.path.join(workingdir, 'include'), '-I'+os.path.join(workingdir, 'include', 'lwip'), '-I'+os.path.join(workingdir, 'include', 'lwip', 'posix')]
         os.environ['PATH'] += os.pathsep + '/opt/rtems-4.11/bin'
     elif (aArch == 'Core-ppc32'):
         platform = 'powerpc-rtems'
-        options = ['-mcpu=403', '-msoft-float', '-fexceptions', '-pipe', '-g3', '-I'+os.path.join(workingdir, 'include', 'rtems49-virtex')]
+        options = options + ['-mcpu=403', '-msoft-float', '-fexceptions', '-pipe', '-g3', '-I'+os.path.join(workingdir, 'include', 'rtems49-virtex')]
         os.environ['PATH'] += os.pathsep + '/opt/rtems-4.9/bin'
     else:
         print 'Error: Unknown arch:', aArch
@@ -112,7 +122,7 @@ def build(aArch):
     if (aArch in ['Windows-x86', 'Windows-x64']):
         make_cmd = ['nmake', '-f', os.path.join('ms', 'ntdll.mak'), 'install']
     elif (aArch in ['Linux-x86', 'Linux-x64', 'Linux-ARM', 'Core-armv6', 'Core-ppc32']):
-        make_cmd = ['make', 'DIRS=\"crypto\"', 'all', 'install_sw']
+        make_cmd = ['make', 'depend', 'build_crypto', 'install_sw']#'all', 'install_sw']
     else:
         print 'Error: Unknown arch:', aArch
         exit(1)
