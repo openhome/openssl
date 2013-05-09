@@ -1,4 +1,10 @@
 *.swp
 *.pyc
+*.o
+*.a
+*.pc
+*.rc
+*.bak
 
+lib
 /build*/
