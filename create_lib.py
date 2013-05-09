@@ -1,13 +1,16 @@
 #!/usr/bin/python
 
+import glob
 import os
+import shutil
 import subprocess
 import sys
 import tarfile
 
-openssl = 'openssl-1.0.1e'
+openssl = 'openssl-1.0.0d'
 
 builddir = os.path.join(os.getcwd(), 'build')
+workingdir = os.getcwd()
 print 'Building to', builddir
 
 def parse_args(aArgs, aAvailArch):
@@ -26,6 +29,35 @@ def parse_args(aArgs, aAvailArch):
     if ((len(aArgs) >= 3) and (aArgs[2] == 'debug')):
         release = 'debug'
     return (arch, release)
+
+def copy_files(src, dst_folder):
+    if not os.path.exists(dst_folder):
+        os.makedirs(dst_folder)
+    for fname in glob.iglob(src):
+        shutil.copy(fname, os.path.join(dst_folder, os.path.basename(fname)))
+
+def install_headers(aArch):
+    # set up include directory
+    if not os.path.exists(os.path.join(workingdir, 'include')):
+        os.mkdir(os.path.join(workingdir, 'include'))
+
+    if (aArch in ['Core-armv6', 'Core-ppc32']):
+        # copy freertos headers
+        freertosdir = os.path.join(workingdir, 'FreertosLwip')
+        includedir = os.path.join(workingdir, 'include')
+        copy_files(os.path.join(freertosdir, 'arch', 'lwippools.h'), os.path.join(includedir, 'lwip'))
+        copy_files(os.path.join(freertosdir, 'lwip', 'src', 'include', 'ipv4', 'lwip', '*.h'), os.path.join(includedir, 'lwip'))
+        copy_files(os.path.join(freertosdir, 'lwip', 'src', 'include', 'lwip', '*.h'), os.path.join(includedir, 'lwip'))
+        copy_files(os.path.join(freertosdir, 'lwip', 'src', 'include', 'netif', '*.h'), os.path.join(includedir, 'lwip', 'netif'))
+        copy_files(os.path.join(freertosdir, 'lwip', 'src', 'include', 'posix', '*.h'), os.path.join(includedir, 'lwip', 'posix'))
+        copy_files(os.path.join(freertosdir, 'lwip', 'src', 'include', 'posix', 'sys', '*.h'), os.path.join(includedir, 'lwip', 'posix', 'sys'))
+        
+        if (aArch == 'Core-armv6'):
+            copy_files(os.path.join(freertosdir, 'arch', 'IMX28', 'lwipopts.h'), os.path.join(includedir, 'lwip'))
+            copy_files(os.path.join(freertosdir, 'arch', 'IMX28', 'cc.h'), os.path.join(includedir, 'lwip', 'arch'))
+        elif (aArch == 'Core-ppc32'):
+            copy_files(os.path.join(freertosdir, 'arch', 'PowerPC', 'lwipopts.h'), os.path.join(includedir, 'lwip'))
+            copy_files(os.path.join(freertosdir, 'arch', 'PowerPC', 'cc.h'), os.path.join(includedir, 'lwip', 'arch'))
 
 def configure(aArch, aRelease):
     print 'Configuring for', aArch, aRelease
@@ -49,11 +81,11 @@ def configure(aArch, aRelease):
         pass    # find compiler option/location for this and add to Configure file
     elif (aArch == 'Core-armv6'):
         platform = 'armv5-freertos'
-        options = ['-msoft-float', '-fexceptions', '-pipe', '-g3', '-Wno-psabi', '-mapcs', '-fno-omit-frame-pointer', '-I'+builddir+'/../include']
+        options = ['-msoft-float', '-fexceptions', '-pipe', '-g3', '-Wno-psabi', '-mapcs', '-fno-omit-frame-pointer', '-I'+os.path.join(workingdir, 'include'), '-I'+os.path.join(workingdir, 'include', 'lwip'), '-I'+os.path.join(workingdir, 'include', 'lwip', 'posix')]
         os.environ['PATH'] += os.pathsep + '/opt/rtems-4.11/bin'
     elif (aArch == 'Core-ppc32'):
         platform = 'powerpc-rtems'
-        options = ['-mcpu=403', '-msoft-float', '-fexceptions', '-pipe', '-g3', '-I'+os.path.join(builddir, '..', 'include')]
+        options = ['-mcpu=403', '-msoft-float', '-fexceptions', '-pipe', '-g3', '-I'+os.path.join(workingdir, 'include', 'rtems49-virtex', 'include')]
         os.environ['PATH'] += os.pathsep + '/opt/rtems-4.9/bin'
     else:
         print 'Error: Unknown arch:', aArch
@@ -106,6 +138,7 @@ def createtargz(aArch, aRelease):
 
 def create_package(aArgs, aAvailArch):
     (arch, release) = parse_args(aArgs, aAvailArch)
+    install_headers(arch)
     configure(arch, release)
     build(arch)
     createtargz(arch, release)
@@ -117,7 +150,6 @@ if __name__ == "__main__":
     except OSError:
         print 'Error: Unable to change to dir:', openssl
         exit(1)
-    #print os.listdir('.')
     create_package(sys.argv, avail_arch)
     try:
         os.chdir('..')
