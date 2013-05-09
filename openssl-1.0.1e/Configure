@@ -201,7 +201,9 @@ my %table=(
 
 # rtems ppc
 "powerpc-rtems", "powerpc-rtems4.9-gcc:-DNO_BIO -DNO_STDIO -O3 -Wall -DTERMIOS -DOPENSSL_IMPLEMENTS_strncasecmp::-D_REENTRANT:RTEMS:",
+"debug-powerpc-rtems", "powerpc-rtems4.9-gcc:-DBN_DEBUG -DREF_CHECK -DCONF_DEBUG -DCRYPTO_MDEBUG -DNO_BIO -DNO_STDIO -g -Wall -DTERMIOS -DOPENSSL_IMPLEMENTS_strncasecmp::-D_REENTRANT:RTEMS:",
 "armv5-freertos", "arm-rtemseabi4.11-gcc:-march=armv5te -O3 -Wall -DOPENSSL_NO_STDIO -DNO_SYSLOG -DL_ENDIAN -DOPENSSL_IMPLEMENTS_strncasecmp::-D_REENTRANT:FREERTOS:",
+"debug-armv5-freertos", "arm-rtemseabi4.11-gcc:-DBN_DEBUG -DCONF_DEBUG -DCRYPTO_MDEBUG -march=armv5te -g -Wall -DOPENSSL_NO_STDIO -DNO_SYSLOG -DL_ENDIAN -DOPENSSL_IMPLEMENTS_strncasecmp::-D_REENTRANT:FREERTOS:",
 
 # Basic configs that should work on any (32 and less bit) box
 "gcc",		"gcc:-O3::(unknown):::BN_LLONG:::",
