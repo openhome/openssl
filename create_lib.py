@@ -7,7 +7,7 @@ import subprocess
 import sys
 import tarfile
 
-openssl = 'openssl-1.0.0d'
+openssl = 'openssl-1.0.1e'
 rtems = 'rtems49-virtex'
 freertos = 'FreertosLwip'
 
@@ -16,21 +16,22 @@ workingdir = os.getcwd()
 print 'Building to', builddir
 
 def parse_args(aArgs, aAvailArch):
-    if ((len(aArgs) < 2) or (aArgs[1] not in aAvailArch)
-            or ((len(aArgs)>=3) and (aArgs[2] != 'debug'))):
+    if ((len(aArgs) < 3) or (aArgs[1] not in aAvailArch)
+            or ((len(aArgs)>=4) and (aArgs[3] != 'debug'))):
         availArchStr = ''
         for i in range(len(aAvailArch)):
             joinChar = ''
             if (i < len(aAvailArch)-1):
                 joinChar = '|'
             availArchStr = ''.join([availArchStr, aAvailArch[i], joinChar])
-        print 'Usage: %s (%s) ?debug' % (aArgs[0], availArchStr)
+        print 'Usage: %s (%s) <version> ?debug' % (aArgs[0], availArchStr)
         exit(1)
     arch = aArgs[1]
+    ver = aArgs[2]
     release = 'release'
-    if ((len(aArgs) >= 3) and (aArgs[2] == 'debug')):
+    if ((len(aArgs) >= 4) and (aArgs[3] == 'debug')):
         release = 'debug'
-    return (arch, release)
+    return (arch, ver, release)
 
 def copy_files(src, dst_folder):
     if not os.path.exists(dst_folder):
@@ -118,7 +119,7 @@ def build(aArch):
         exit(1)
     subprocess.check_call(make_cmd)
 
-def createtargz(aArch, aRelease):
+def createtargz(aArch, aVer, aRelease):
     print 'Packaging OpenSSL for', aArch
     
     cryptolib = ''
@@ -130,28 +131,23 @@ def createtargz(aArch, aRelease):
         print 'Error: Unknown arch:', aArch
         exit(1)
 
-    debugtag = ''
+    debugtag = '-Release'
     if (aRelease == 'debug'):
-        debugtag = '-debug'
+        debugtag = '-Debug'
 
-    tarname = os.path.join(builddir, openssl+'-include-'+aArch+debugtag+'.tar.bz2')
+    tarname = os.path.join(builddir, openssl+'-'+aVer+'-'+aArch+debugtag+'.tar.bz2')
     print 'Creating ', tarname
     tar = tarfile.open(tarname, 'w:bz2')
-    tar.add(os.path.join(builddir, aArch, 'include', 'openssl'), arcname='openssl')
-    tar.close()
-
-    tarname = os.path.join(builddir,openssl+'-lib-'+aArch+debugtag+'.tar.bz2')
-    print 'Creating ', tarname
-    tar = tarfile.open(tarname, 'w:bz2')
-    tar.add(os.path.join(builddir, aArch, 'lib', cryptolib), arcname=cryptolib)
+    tar.add(os.path.join(builddir, aArch, 'include', 'openssl'), arcname=os.path.join('openssl', 'include'))
+    tar.add(os.path.join(builddir, aArch, 'lib', cryptolib), arcname=os.path.join('openssl', 'lib', cryptolib))
     tar.close()
 
 def create_package(aArgs, aAvailArch):
-    (arch, release) = parse_args(aArgs, aAvailArch)
+    (arch, ver, release) = parse_args(aArgs, aAvailArch)
     install_headers(arch)
     configure(arch, release)
     build(arch)
-    createtargz(arch, release)
+    createtargz(arch, ver, release)
 
 if __name__ == "__main__":
     avail_arch = ['Windows-x86', 'Windows-x64', 'Linux-x86', 'Linux-x64', 'Linux-ARM', 'Core-armv6', 'Core-ppc32']
