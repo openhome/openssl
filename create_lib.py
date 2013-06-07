@@ -75,14 +75,15 @@ def configure(aArch, aRelease):
     options = []
     # options = ['no-idea', 'no-camellia', 'no-seed', 'no-bf', 'no-cast'
                 # , 'no-des', 'no-rc2', 'no-rc4', 'no-rc5', 'no-md2', 'no-md4'
-                # , 'no-md5', 'no-ripemd', 'no-mdc2', 'no-rsa', 'no-dsa', 'no-dh'
+                # , 'no-md5', 'no-ripemd', 'no-mdc2', 'no-dsa', 'no-dh'
                 # , 'no-ec', 'no-ecdsa', 'no-ecdh', 'no-sock', 'no-ssl2'
-                # , 'no-ssl3', 'no-krb5', 'no-engine', 'no-hw', 'no-bio', 'no-bf'
-                # , 'no-gmp', 'no-gost', 'no-jpake', 'no-rfc3779', 'no-shared'
+                # , 'no-ssl3', 'no-krb5', 'no-engine', 'no-hw', 'no-stdio'
+                # , #'no-bio',
+                # 'no-bf', 'no-gmp', 'no-gost', 'no-jpake', 'no-rfc3779', 'no-shared'
                 # , 'no-store', 'no-tls1', 'no-tlsext', 'no-zlib', 'no-zlib-dynamic'
-                #, 'no-asm', 'no-hmac', 'no-lhash', 'no-evp', 'no-stack', 'no-rand'
-                #, 'no-dso', 'no-asn1', 'no-pem', 'no-x509', 'no-x509-v3', 'no-err']
-    #options += ['no-err']
+                # , 'no-asm', 'no-lhash', 'no-stack', 'no-rand'
+                # , 'no-dso', 'no-asn1', 'no-pem', 'no-x509', 'no-x509-v3', 'no-err'
+                # ]
     debug_prefix = ''
     if (aRelease == 'debug'):
         debug_prefix = 'debug-'
@@ -123,7 +124,7 @@ def build(aArch):
     if (aArch in ['Windows-x86', 'Windows-x64']):
         make_cmd = ['nmake', '-f', os.path.join('ms', 'ntdll.mak'), 'install']
     elif (aArch in ['Linux-x86', 'Linux-x64', 'Linux-ARM', 'Core-armv6', 'Core-ppc32']):
-        make_cmd = ['make', 'DIRS=\"crypto\"', 'all', 'install_sw']
+        make_cmd = ['make', 'depend' 'DIRS=\"crypto\"', 'all', 'install_sw']
     else:
         print 'Error: Unknown arch:', aArch
         exit(1)
