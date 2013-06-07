@@ -160,7 +160,7 @@ def createtargz(aArch, aVer, aRelease):
     tarname = os.path.join(builddir, openssl+'-'+aVer+'-'+aArch+debugtag+'.tar.bz2')
     print 'Creating ', tarname
     tar = tarfile.open(tarname, 'w:bz2')
-    tar.add(os.path.join(builddir, aArch, 'include', 'openssl'), arcname=os.path.join('openssl', 'include'))
+    tar.add(os.path.join(builddir, aArch, 'include'), arcname=os.path.join('openssl', 'include'))
     tar.add(os.path.join(builddir, aArch, 'lib', cryptolib), arcname=os.path.join('openssl', 'lib', cryptolib))
     tar.close()
 
