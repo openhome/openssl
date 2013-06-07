@@ -15,15 +15,19 @@ builddir = os.path.join(os.getcwd(), 'build')
 workingdir = os.getcwd()
 print 'Building to', builddir
 
+def arch_opt_str(aAvailArch):
+    availArchStr = ''
+    for i in range(len(aAvailArch)):
+        joinChar = ''
+        if (i < len(aAvailArch)-1):
+            joinChar = '|'
+        availArchStr = ''.join([availArchStr, aAvailArch[i], joinChar])
+    return availArchStr
+
 def parse_args(aArgs, aAvailArch):
     if ((len(aArgs) < 3) or (aArgs[1] not in aAvailArch)
             or ((len(aArgs)>=4) and (aArgs[3] != 'debug'))):
-        availArchStr = ''
-        for i in range(len(aAvailArch)):
-            joinChar = ''
-            if (i < len(aAvailArch)-1):
-                joinChar = '|'
-            availArchStr = ''.join([availArchStr, aAvailArch[i], joinChar])
+        availArchStr = arch_opt_str(aAvailArch)
         print 'Usage: %s (%s) <version> ?debug' % (aArgs[0], availArchStr)
         exit(1)
     arch = aArgs[1]
@@ -125,7 +129,13 @@ def build(aArch):
     if (aArch in ['Windows-x86', 'Windows-x64']):
         make_cmd = ['nmake', '-f', os.path.join('ms', 'ntdll.mak'), 'install']
     elif (aArch in ['Linux-x86', 'Linux-x64', 'Linux-ARM', 'Core-armv6', 'Core-ppc32']):
-        make_cmd = ['make', 'depend' 'DIRS=\"crypto\"', 'all', 'install_sw']
+        make_cmd = ['make', 'DIRS=\"crypto\"', 'all', 'install_sw']
+        # The following command would be preferable.
+        # However:
+        #   Core-armv6 chokes when 'depend' is added
+        #   ALL Linux-based builds fail during install_sw if 'all' is not included
+        #
+        #make_cmd = ['make', 'depend' 'buildcrypto', 'install_sw']
     else:
         print 'Error: Unknown arch:', aArch
         exit(1)
