@@ -123,7 +123,7 @@ def build(aArch):
     if (aArch in ['Windows-x86', 'Windows-x64']):
         make_cmd = ['nmake', '-f', os.path.join('ms', 'ntdll.mak'), 'install']
     elif (aArch in ['Linux-x86', 'Linux-x64', 'Linux-ARM', 'Core-armv6', 'Core-ppc32']):
-        make_cmd = ['make', 'depend', 'build_crypto', 'install_sw']#'all', 'install_sw']
+        make_cmd = ['make', 'DIRS=\"crypto\"', 'all', 'install_sw']
     else:
         print 'Error: Unknown arch:', aArch
         exit(1)
