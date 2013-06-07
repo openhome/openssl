@@ -7,7 +7,7 @@ import subprocess
 import sys
 import tarfile
 
-openssl = 'openssl-1.0.1e'
+openssl = 'openssl-1.0.0d'
 rtems = 'rtems49-virtex'
 freertos = 'FreertosLwip'
 
@@ -103,7 +103,8 @@ def configure(aArch, aRelease):
         exit(1)
     elif (aArch == 'Core-armv6'):
         platform = 'armv5-freertos'
-        options = options + ['-msoft-float', '-fexceptions', '-pipe', '-g3', '-Wno-psabi', '-mapcs', '-fno-omit-frame-pointer', '-I'+os.path.join(workingdir, 'include'), '-I'+os.path.join(workingdir, 'include', 'lwip'), '-I'+os.path.join(workingdir, 'include', 'lwip', 'posix')]
+        options = options + ['-msoft-float', '-fexceptions', '-pipe', '-g3', '-Wno-psabi', '-mapcs', '-fno-omit-frame-pointer', '-I'+os.path.join(workingdir, 'include'), '-I'+os.path.join(workingdir, 'include', 'lwip'), '-I'+os.path.join(workingdir, 'include', 'lwip', 'posix')
+        ]
         os.environ['PATH'] += os.pathsep + '/opt/rtems-4.11/bin'
     elif (aArch == 'Core-ppc32'):
         platform = 'powerpc-rtems'
