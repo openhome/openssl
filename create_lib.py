@@ -153,6 +153,17 @@ def createtargz(aArch, aVer, aRelease):
     tar.add(os.path.join(builddir, aArch, 'lib', cryptolib), arcname=os.path.join('openssl', 'lib', cryptolib))
     tar.close()
 
+def clean(aArch):
+    make_cmd = []
+    if (aArch in ['Windows-x86', 'Windows-x64']):
+        make_cmd = ['nmake', '-f', os.path.join('ms', 'ntdll.mak'), 'clean']
+    elif (aArch in ['Linux-x86', 'Linux-x64', 'Linux-ARM', 'Core-armv6', 'Core-ppc32']):
+        make_cmd = ['make', 'clean']
+    else:
+        print 'Error: Unknown arch:', aArch
+        exit(1)
+    subprocess.check_call(make_cmd)
+
 def create_package(aArgs, aAvailArch):
     (arch, ver, release) = parse_args(aArgs, aAvailArch)
     install_headers(arch)
@@ -167,7 +178,10 @@ if __name__ == "__main__":
     except OSError:
         print 'Error: Unable to change to dir:', openssl
         exit(1)
-    create_package(sys.argv, avail_arch)
+    if (sys.argv[1] == 'clean') and (sys.argv[2] in avail_arch):
+        clean(sys.argv[2])
+    else:
+        create_package(sys.argv, avail_arch)
     try:
         os.chdir('..')
     except OSError:
