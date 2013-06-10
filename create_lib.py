@@ -76,8 +76,7 @@ def configure(aArch, aRelease):
     print 'Configuring for', aArch, aRelease
 
     platform = ''
-    #options = []
-    options = ['no-ui']
+    options = []
     # options = ['no-idea', 'no-camellia', 'no-seed', 'no-bf', 'no-cast'
                 # , 'no-des', 'no-rc2', 'no-rc4', 'no-rc5', 'no-md2', 'no-md4'
                 # , 'no-md5', 'no-ripemd', 'no-mdc2', 'no-dsa', 'no-dh'
@@ -190,8 +189,7 @@ if __name__ == "__main__":
     except OSError:
         print 'Error: Unable to change to dir:', openssl
         exit(1)
-    if (len(sys.argv) > 2):
-        if (sys.argv[1] == 'clean') and (sys.argv[2] in avail_arch):
+    if (len(sys.argv) > 2) and (sys.argv[1] == 'clean') and (sys.argv[2] in avail_arch):
             clean(sys.argv[2])
     else:
         create_package(sys.argv, avail_arch)
