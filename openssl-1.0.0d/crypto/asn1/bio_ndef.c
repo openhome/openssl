@@ -57,7 +57,7 @@
 #include <openssl/bio.h>
 #include <openssl/err.h>
 
-#if !defined(OPENSSL_SYSNAME_NETWARE) && !defined(OPENSSL_SYSNAME_FREERTOS)
+#if !defined(OPENSSL_SYSNAME_NETWARE) && !defined(OPENSSL_SYSNAME_CORE_PLATFORM)
 #include <memory.h>
 #endif
 #include <stdio.h>

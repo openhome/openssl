@@ -172,7 +172,7 @@
 #endif
 #endif
 
-#if !defined(OPENSSL_SYSNAME_FREERTOS)
+#if !defined(OPENSSL_SYSNAME_CORE_PLATFORM)
 
 /* There are 5 types of terminal interface supported,
  * TERMIO, TERMIOS, VMS, MSDOS and SGTTY
@@ -312,7 +312,7 @@ static int read_string_inner(UI *ui, UI_STRING *uis, int echo, int strip_nl);
 static int echo_console(UI *ui);
 static int noecho_console(UI *ui);
 
-#endif  /* !defined(OPENSSL_SYSNAME_FREERTOS) */
+#endif  /* !defined(OPENSSL_SYSNAME_CORE_PLATFORM) */
 
 static int open_console(UI *ui);
 static int read_string(UI *ui, UI_STRING *uis);
@@ -336,7 +336,7 @@ UI_METHOD *UI_OpenSSL(void)
 	return &ui_openssl;
 	}
 
-#ifdef OPENSSL_SYSNAME_FREERTOS
+#ifdef OPENSSL_SYSNAME_CORE_PLATFORM
 
 static int open_console(UI *ui)
 {
@@ -739,4 +739,4 @@ static int noecho_fgets(char *buf, int size, FILE *tty)
 #endif
 
 
-#endif /* defined(OPENSSL_SYSNAME_FREERTOS) */
+#endif /* defined(OPENSSL_SYSNAME_CORE_PLATFORM) */

@@ -70,7 +70,7 @@
 #include "o_dir.h"
 
 #define LPDIR_H
-#if (defined(OPENSSL_SYS_UNIX) || defined(DJGPP)) && !defined(OPENSSL_SYSNAME_FREERTOS)
+#if (defined(OPENSSL_SYS_UNIX) || defined(DJGPP)) && !defined(OPENSSL_SYSNAME_CORE_PLATFORM)
 #include "LPdir_unix.c"
 #elif defined OPENSSL_SYS_VMS
 #include "LPdir_vms.c"

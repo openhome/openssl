@@ -56,7 +56,7 @@
 #include <openssl/pkcs7.h>
 #include <openssl/bio.h>
 
-#if !defined(OPENSSL_SYSNAME_NETWARE) && !defined(OPENSSL_SYSNAME_FREERTOS)
+#if !defined(OPENSSL_SYSNAME_NETWARE) && !defined(OPENSSL_SYSNAME_CORE_PLATFORM)
 #include <memory.h>
 #endif
 #include <stdio.h>

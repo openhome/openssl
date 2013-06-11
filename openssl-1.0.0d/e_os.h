@@ -203,7 +203,7 @@ extern "C" {
 #define readsocket(s,b,n)		recv((s),(b),(n),0)
 #define writesocket(s,b,n)		send((s),(b),(n),0)
 #endif
-#elif defined(OPENSSL_SYSNAME_FREERTOS)
+#elif defined(OPENSSL_SYSNAME_CORE_PLATFORM)
 #include <lwip/sockets.h>
 #define get_last_socket_error()	errno
 #define clear_socket_error()	errno=0
@@ -490,7 +490,7 @@ static unsigned int _strlen31(const char *str)
 /*************/
 
 #ifdef USE_SOCKETS
-#  if defined(OPENSSL_SYSNAME_FREERTOS)
+#  if defined(OPENSSL_SYSNAME_CORE_PLATFORM)
 #       include <lwip/sockets.h>
 #       include <lwip/netdb.h>
 #       define SSLeay_Write(a,b,c)	lwip_send((a),(b),(c),0)

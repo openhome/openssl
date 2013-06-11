@@ -117,7 +117,7 @@
 
 #if !(defined(OPENSSL_SYS_WINDOWS) || defined(OPENSSL_SYS_WIN32) || defined(OPENSSL_SYS_VMS) || defined(OPENSSL_SYS_OS2) || defined(OPENSSL_SYS_VXWORKS) || defined(OPENSSL_SYS_NETWARE))
 
-#if defined(OPENSSL_SYSNAME_FREERTOS)
+#if defined(OPENSSL_SYSNAME_CORE_PLATFORM)
 int RAND_poll(void)
 {
 	long rnd = 0, i;
@@ -399,7 +399,7 @@ int RAND_poll(void)
 
 #endif /* defined(__OpenBSD__) */
 
-#endif /* defined(OPENSSL_SYSNAME_FREERTOS) */
+#endif /* defined(OPENSSL_SYSNAME_CORE_PLATFORM) */
 
 #endif /* !(defined(OPENSSL_SYS_WINDOWS) || defined(OPENSSL_SYS_WIN32) || defined(OPENSSL_SYS_VMS) || defined(OPENSSL_SYS_OS2) || defined(OPENSSL_SYS_VXWORKS) || defined(OPENSSL_SYS_NETWARE)) */
 

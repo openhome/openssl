@@ -58,7 +58,7 @@
 
 #include "cryptlib.h"
 
-#if defined(OPENSSL_SYS_UNIX) && !defined(OPENSSL_SYSNAME_FREERTOS)
+#if defined(OPENSSL_SYS_UNIX) && !defined(OPENSSL_SYSNAME_CORE_PLATFORM)
 #include <sys/time.h>
 #endif
 

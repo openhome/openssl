@@ -77,7 +77,7 @@
 #  include <starlet.h>
 #elif defined(__ultrix)
 #  include <sys/syslog.h>
-#elif defined(OPENSSL_SYS_NETWARE) || defined(OPENSSL_SYSNAME_FREERTOS)
+#elif defined(OPENSSL_SYS_NETWARE) || defined(OPENSSL_SYSNAME_CORE_PLATFORM)
 #  define NO_SYSLOG
 #elif (!defined(MSDOS) || defined(WATT32)) && !defined(OPENSSL_SYS_VXWORKS) && !defined(NO_SYSLOG)
 #  include <syslog.h>
