@@ -4,7 +4,7 @@ Static library providing OpenSSL's cryptography routines.
 
 To build the OpenSSL cryptography library and package it for a particular platform, call
 
-python create_lib.py <platform> debug
+python create_lib.py <platform> ?debug
 
 where platform is one of:
 
@@ -13,8 +13,8 @@ Windows-x64
 Linux-x86
 Linux-x64
 Linux-ARM
-Linux-corev6
-Linux-ppc
+Core-armv6
+Core-ppc32
 
 and debug is an optional flag.
 
@@ -23,11 +23,9 @@ The resulting libraries will be built/installed into a top-level build directory
 
 Packages of header files and the libraries themselves will also be placed into the build directory, with names of the form:
 
-openssl-<version>-include-<platform>.tar.bz2 # headers
-openssl-<version>-lib-<platform>.tar.bz2     # library
+openssl-<external_version>-<internal_version>-<platform>-Release.tar.bz2
 
 or, for debug builds:
 
-openssl-<version>-include-<platform>-debug.tar.bz2  #headers
-openssl-<version>-lib-<platform>-debug.tar.bz2      #library
+openssl-<external_version>-<internal_version>-<platform>-Debug.tar.bz2
 
