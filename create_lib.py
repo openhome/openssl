@@ -8,7 +8,6 @@ import sys
 import tarfile
 
 openssl = 'openssl-1.0.0d'
-rtems = 'rtems49-virtex'
 freertos = 'FreertosLwip'
 
 builddir = os.path.join(os.getcwd(), 'build')
@@ -66,17 +65,13 @@ def install_headers(aArch):
             copy_files(os.path.join(freertosdir, 'arch', 'PowerPC', 'lwipopts.h'), os.path.join(includedir, 'lwip'))
             copy_files(os.path.join(freertosdir, 'arch', 'PowerPC', 'cc.h'), os.path.join(includedir, 'lwip', 'arch'))
 
-    if (aArch == 'Core-ppc32'):
-        #copy rtems headers
-        rtemsdir = os.path.join(workingdir, rtems)
-        if not os.path.exists(os.path.join(includedir, rtems)):
-            shutil.copytree(os.path.join(rtemsdir, 'include'), os.path.join(includedir, rtems))
-
 def configure(aArch, aRelease):
     print 'Configuring for', aArch, aRelease
 
     platform = ''
-    options = []
+    #options = []
+    options = ['no-err']
+    # Does OpenSSL actually act on all these options?
     # options = ['no-idea', 'no-camellia', 'no-seed', 'no-bf', 'no-cast'
                 # , 'no-des', 'no-rc2', 'no-rc4', 'no-rc5', 'no-md2', 'no-md4'
                 # , 'no-md5', 'no-ripemd', 'no-mdc2', 'no-dsa', 'no-dh'
@@ -112,8 +107,9 @@ def configure(aArch, aRelease):
         os.environ['PATH'] += os.pathsep + '/opt/rtems-4.11/bin'
     elif (aArch == 'Core-ppc32'):
         platform = 'powerpc-rtems'
-        options = options + ['-mcpu=403', '-msoft-float', '-fexceptions', '-pipe', '-g3', '-I'+os.path.join(workingdir, 'include', 'rtems49-virtex')]
-        os.environ['PATH'] += os.pathsep + '/opt/rtems-4.9/bin'
+        options = options + ['-mcpu=403', '-msoft-float', '-fexceptions', '-pipe', '-g3', '-I'+os.path.join(workingdir, 'include'), '-I'+os.path.join(workingdir, 'include', 'lwip'), '-I'+os.path.join(workingdir, 'include', 'lwip', 'posix')
+        ]
+        os.environ['PATH'] += os.pathsep + '/opt/rtems-4.11/bin'
     else:
         print 'Error: Unknown arch:', aArch
         exit(1)
