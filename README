@@ -4,7 +4,7 @@ Static library providing OpenSSL's cryptography routines.
 
 To build the OpenSSL cryptography library and package it for a particular platform, call
 
-python create_lib.py <platform> ?debug
+python create_lib.py <platform> <version> ?debug
 
 where platform is one of:
 
