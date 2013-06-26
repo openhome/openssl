@@ -100,6 +100,8 @@ def configure(aArch, aRelease):
         # find compiler option/location for this and add to OpenSSL Configure file
         print 'Error: Linux-ARM target not yet defined'
         exit(1)
+    elif (aArch == 'Linux-ppc32'):
+	platform = 'linux-ppc'
     elif (aArch == 'Core-armv6'):
         platform = 'armv5-freertos'
         options = options + ['-msoft-float', '-fexceptions', '-pipe', '-g3', '-Wno-psabi', '-mapcs', '-fno-omit-frame-pointer', '-I'+os.path.join(workingdir, 'include'), '-I'+os.path.join(workingdir, 'include', 'lwip'), '-I'+os.path.join(workingdir, 'include', 'lwip', 'posix')
@@ -124,7 +126,7 @@ def build(aArch):
     make_cmd = []
     if (aArch in ['Windows-x86', 'Windows-x64']):
         make_cmd = ['nmake', '-f', os.path.join('ms', 'ntdll.mak'), 'install']
-    elif (aArch in ['Linux-x86', 'Linux-x64', 'Linux-ARM', 'Core-armv6', 'Core-ppc32']):
+    elif (aArch in ['Linux-x86', 'Linux-x64', 'Linux-ARM', 'Linux-ppc32', 'Core-armv6', 'Core-ppc32']):
         make_cmd = ['make', 'DIRS=\"crypto\"', 'all', 'install_sw']
         # The following command would be preferable.
         # However:
@@ -143,7 +145,7 @@ def createtargz(aArch, aVer, aRelease):
     cryptolib = ''
     if (aArch in ['Windows-x86', 'Windows-x64']):
         cryptolib = 'libeay32.lib'
-    elif (aArch in ['Linux-x86', 'Linux-x64', 'Linux-ARM', 'Core-armv6', 'Core-ppc32']):
+    elif (aArch in ['Linux-x86', 'Linux-x64', 'Linux-ARM', 'Linux-ppc32', 'Core-armv6', 'Core-ppc32']):
         cryptolib = 'libcrypto.a'
     else:
         print 'Error: Unknown arch:', aArch
@@ -164,7 +166,7 @@ def clean(aArch):
     make_cmd = []
     if (aArch in ['Windows-x86', 'Windows-x64']):
         make_cmd = ['nmake', '-f', os.path.join('ms', 'ntdll.mak'), 'clean']
-    elif (aArch in ['Linux-x86', 'Linux-x64', 'Linux-ARM', 'Core-armv6', 'Core-ppc32']):
+    elif (aArch in ['Linux-x86', 'Linux-x64', 'Linux-ARM', 'Linux-ppc32', 'Core-armv6', 'Core-ppc32']):
         make_cmd = ['make', 'clean']
     else:
         print 'Error: Unknown arch:', aArch
@@ -179,7 +181,7 @@ def create_package(aArgs, aAvailArch):
     createtargz(arch, ver, release)
 
 if __name__ == "__main__":
-    avail_arch = ['Windows-x86', 'Windows-x64', 'Linux-x86', 'Linux-x64', 'Linux-ARM', 'Core-armv6', 'Core-ppc32']
+    avail_arch = ['Windows-x86', 'Windows-x64', 'Linux-x86', 'Linux-x64', 'Linux-ARM', 'Linux-ppc32', 'Core-armv6', 'Core-ppc32']
     try:
         os.chdir(openssl)
     except OSError:
