@@ -7,8 +7,12 @@ from create_lib import openssl, arch_opt_str, clean, create_package
 
 def build_arch(targets, ver):
     for arch in targets:
+        # release build
         clean(arch)
         create_package(['', arch, ver], targets)
+        # debug build
+        clean(arch)
+        create_package(['', arch, ver, 'debug'], targets)
 
 if __name__ == "__main__":
     base_arch = ['Windows', 'Linux']
