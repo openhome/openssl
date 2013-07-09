@@ -125,7 +125,7 @@ def configure(aArch, aRelease):
 def build(aArch):
     make_cmd = []
     if (aArch in ['Windows-x86', 'Windows-x64']):
-        make_cmd = ['nmake', '-f', os.path.join('ms', 'ntdll.mak'), 'install']
+        make_cmd = ['nmake', '-f', os.path.join('ms', 'nt.mak'), 'install']
     elif (aArch in ['Linux-x86', 'Linux-x64', 'Linux-ARM', 'Linux-ppc32', 'Core-armv6', 'Core-ppc32']):
         make_cmd = ['make', 'DIRS=\"crypto\"', 'all', 'install_sw']
         # The following command would be preferable.
@@ -165,7 +165,7 @@ def createtargz(aArch, aVer, aRelease):
 def clean(aArch):
     make_cmd = []
     if (aArch in ['Windows-x86', 'Windows-x64']):
-        make_cmd = ['nmake', '-f', os.path.join('ms', 'ntdll.mak'), 'clean']
+        make_cmd = ['nmake', '-f', os.path.join('ms', 'nt.mak'), 'clean']
     elif (aArch in ['Linux-x86', 'Linux-x64', 'Linux-ARM', 'Linux-ppc32', 'Core-armv6', 'Core-ppc32']):
         make_cmd = ['make', 'clean']
     else:
