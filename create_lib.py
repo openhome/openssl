@@ -104,12 +104,12 @@ def configure(aArch, aRelease):
 	platform = 'linux-ppc'
     elif (aArch == 'Core-armv6'):
         platform = 'armv5-freertos'
-        options = options + ['-msoft-float', '-fexceptions', '-pipe', '-g3', '-Wno-psabi', '-mapcs', '-fno-omit-frame-pointer', '-I'+os.path.join(workingdir, 'include'), '-I'+os.path.join(workingdir, 'include', 'lwip'), '-I'+os.path.join(workingdir, 'include', 'lwip', 'posix')
+        options = options + ['-msoft-float', '-fexceptions', '-pipe', '-g', '-Wno-psabi', '-mapcs', '-fno-omit-frame-pointer', '-I'+os.path.join(workingdir, 'include'), '-I'+os.path.join(workingdir, 'include', 'lwip'), '-I'+os.path.join(workingdir, 'include', 'lwip', 'posix')
         ]
         os.environ['PATH'] += os.pathsep + '/opt/rtems-4.11/bin'
     elif (aArch == 'Core-ppc32'):
         platform = 'powerpc-rtems'
-        options = options + ['-mcpu=403', '-msoft-float', '-fexceptions', '-pipe', '-g3', '-I'+os.path.join(workingdir, 'include'), '-I'+os.path.join(workingdir, 'include', 'lwip'), '-I'+os.path.join(workingdir, 'include', 'lwip', 'posix')
+        options = options + ['-mcpu=403', '-msoft-float', '-fexceptions', '-pipe', '-g', '-I'+os.path.join(workingdir, 'include'), '-I'+os.path.join(workingdir, 'include', 'lwip'), '-I'+os.path.join(workingdir, 'include', 'lwip', 'posix')
         ]
         os.environ['PATH'] += os.pathsep + '/opt/rtems-4.11/bin'
     else:
