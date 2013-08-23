@@ -17,7 +17,7 @@ def build_arch(targets, ver):
 if __name__ == "__main__":
     base_arch = ['Windows', 'Linux']
     windows_arch = ['Windows-x86', 'Windows-x64']
-    linux_arch = ['Linux-x86', 'Linux-x64', 'Core-armv6', 'Core-ppc32']#, 'Linux-ppc32', 'Linux-ARM']
+    linux_arch = ['Linux-x86', 'Linux-x64', 'Core-armv5', 'Core-armv6', 'Core-ppc32']#, 'Linux-ppc32', 'Linux-ARM']
     if (len(sys.argv) < 3) or (sys.argv[1] not in base_arch):
         availArchStr = arch_opt_str(base_arch)
         print 'Usage: %s (%s) <version>' % (sys.argv[0], availArchStr)

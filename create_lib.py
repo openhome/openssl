@@ -6,6 +6,7 @@ import shutil
 import subprocess
 import sys
 import tarfile
+import optparse
 
 openssl = 'openssl-1.0.0d'
 freertos = 'FreertosLwip'
@@ -13,28 +14,6 @@ freertos = 'FreertosLwip'
 builddir = os.path.join(os.getcwd(), 'build')
 workingdir = os.getcwd()
 print 'Building to', builddir
-
-def arch_opt_str(aAvailArch):
-    availArchStr = ''
-    for i in range(len(aAvailArch)):
-        joinChar = ''
-        if (i < len(aAvailArch)-1):
-            joinChar = '|'
-        availArchStr = ''.join([availArchStr, aAvailArch[i], joinChar])
-    return availArchStr
-
-def parse_args(aArgs, aAvailArch):
-    if ((len(aArgs) < 3) or (aArgs[1] not in aAvailArch)
-            or ((len(aArgs)>=4) and (aArgs[3] != 'debug'))):
-        availArchStr = arch_opt_str(aAvailArch)
-        print 'Usage: %s (%s) <version> ?debug' % (aArgs[0], availArchStr)
-        exit(1)
-    arch = aArgs[1]
-    ver = aArgs[2]
-    release = 'release'
-    if ((len(aArgs) >= 4) and (aArgs[3] == 'debug')):
-        release = 'debug'
-    return (arch, ver, release)
 
 def copy_files(src, dst_folder):
     if not os.path.exists(dst_folder):
@@ -48,7 +27,7 @@ def install_headers(aArch):
     if not os.path.exists(includedir):
         os.mkdir(includedir)
 
-    if (aArch in ['Core-armv6', 'Core-ppc32']):
+    if (aArch in ['Core-armv5', 'Core-armv6', 'Core-ppc32']):
         # copy freertos headers
         freertosdir = os.path.join(workingdir, freertos)
         copy_files(os.path.join(freertosdir, 'arch', 'lwippools.h'), os.path.join(includedir, 'lwip'))
@@ -58,7 +37,7 @@ def install_headers(aArch):
         copy_files(os.path.join(freertosdir, 'lwip', 'src', 'include', 'posix', '*.h'), os.path.join(includedir, 'lwip', 'posix'))
         copy_files(os.path.join(freertosdir, 'lwip', 'src', 'include', 'posix', 'sys', '*.h'), os.path.join(includedir, 'lwip', 'posix', 'sys'))
         
-        if (aArch == 'Core-armv6'):
+        if (aArch in ['Core-armv5', 'Core-armv6']):
             copy_files(os.path.join(freertosdir, 'arch', 'IMX28', 'lwipopts.h'), os.path.join(includedir, 'lwip'))
             copy_files(os.path.join(freertosdir, 'arch', 'IMX28', 'cc.h'), os.path.join(includedir, 'lwip', 'arch'))
         elif (aArch == 'Core-ppc32'):
@@ -102,7 +81,7 @@ def configure(aArch, aRelease):
         exit(1)
     elif (aArch == 'Linux-ppc32'):
 	platform = 'linux-ppc'
-    elif (aArch == 'Core-armv6'):
+    elif (aArch in ['Core-armv5', 'Core-armv6']):
         platform = 'armv5-freertos'
         options = options + ['-msoft-float', '-fexceptions', '-pipe', '-g', '-Wno-psabi', '-mapcs', '-fno-omit-frame-pointer', '-I'+os.path.join(workingdir, 'include'), '-I'+os.path.join(workingdir, 'include', 'lwip'), '-I'+os.path.join(workingdir, 'include', 'lwip', 'posix')
         ]
@@ -126,7 +105,7 @@ def build(aArch):
     make_cmd = []
     if (aArch in ['Windows-x86', 'Windows-x64']):
         make_cmd = ['nmake', '-f', os.path.join('ms', 'nt.mak'), 'install']
-    elif (aArch in ['Linux-x86', 'Linux-x64', 'Linux-ARM', 'Linux-ppc32', 'Core-armv6', 'Core-ppc32']):
+    elif (aArch in ['Linux-x86', 'Linux-x64', 'Linux-ARM', 'Linux-ppc32', 'Core-armv5', 'Core-armv6', 'Core-ppc32']):
         make_cmd = ['make', 'DIRS=\"crypto\"', 'all', 'install_sw']
         # The following command would be preferable.
         # However:
@@ -139,14 +118,14 @@ def build(aArch):
         exit(1)
     subprocess.check_call(make_cmd)
 
-def createtargz(aArch, aVer, aRelease):
+def create_bundle(aArch, aVer, aRelease):
     print 'Packaging OpenSSL for', aArch
     
     cryptolib = ''
     windows_symbols = 'lib.pdb'
     if (aArch in ['Windows-x86', 'Windows-x64']):
         cryptolib = 'libeay32.lib'
-    elif (aArch in ['Linux-x86', 'Linux-x64', 'Linux-ARM', 'Linux-ppc32', 'Core-armv6', 'Core-ppc32']):
+    elif (aArch in ['Linux-x86', 'Linux-x64', 'Linux-ARM', 'Linux-ppc32', 'Core-armv5', 'Core-armv6', 'Core-ppc32']):
         cryptolib = 'libcrypto.a'
     else:
         print 'Error: Unknown arch:', aArch
@@ -167,36 +146,70 @@ def createtargz(aArch, aVer, aRelease):
             windows_tmp = 'tmp32.dbg'
         tar.add(os.path.join(workingdir, openssl, windows_tmp, windows_symbols), arcname=os.path.join('openssl', 'lib', windows_symbols))
     tar.close()
+    return tarname
 
 def clean(aArch):
     make_cmd = []
     if (aArch in ['Windows-x86', 'Windows-x64']):
         make_cmd = ['nmake', '-f', os.path.join('ms', 'nt.mak'), 'clean']
-    elif (aArch in ['Linux-x86', 'Linux-x64', 'Linux-ARM', 'Linux-ppc32', 'Core-armv6', 'Core-ppc32']):
+    elif (aArch in ['Linux-x86', 'Linux-x64', 'Linux-ARM', 'Linux-ppc32', 'Core-armv5', 'Core-armv6', 'Core-ppc32']):
         make_cmd = ['make', 'clean']
     else:
         print 'Error: Unknown arch:', aArch
         exit(1)
     subprocess.check_call(make_cmd)
 
-def create_package(aArgs, aAvailArch):
-    (arch, ver, release) = parse_args(aArgs, aAvailArch)
-    install_headers(arch)
-    configure(arch, release)
-    build(arch)
-    createtargz(arch, ver, release)
+def create_package(aArch, aRelease, aVersion):
+    install_headers(aArch)
+    configure(aArch, aRelease)
+    build(aArch)
+    archive_name = create_bundle(aArch, aVersion, aRelease)
+    return archive_name
+
+def publish(aPackageFile):
+    bundle_dest = 'artifacts@core.linn.co.uk:/home/artifacts/public_html/artifacts/openssl/'
+    rsync_cmd   = ['rsync', aPackageFile, bundle_dest]
+    print(rsync_cmd)
+    subprocess.check_call(rsync_cmd)
 
 if __name__ == "__main__":
-    avail_arch = ['Windows-x86', 'Windows-x64', 'Linux-x86', 'Linux-x64', 'Linux-ARM', 'Linux-ppc32', 'Core-armv6', 'Core-ppc32']
+    avail_arch = ['Windows-x86', 'Windows-x64', 'Linux-x86', 'Linux-x64', 'Linux-ARM', 'Linux-ppc32', 'Core-armv5', 'Core-armv6', 'Core-ppc32']
     try:
         os.chdir(openssl)
     except OSError:
         print 'Error: Unable to change to dir:', openssl
         exit(1)
-    if (len(sys.argv) > 2) and (sys.argv[1] == 'clean') and (sys.argv[2] in avail_arch):
-            clean(sys.argv[2])
-    else:
-        create_package(sys.argv, avail_arch)
+
+    # first arg is the 'command': either 'build' or 'clean'
+    # second arg is the platform
+
+    parser = optparse.OptionParser()
+    parser.add_option('-p', '--publish', dest='publish', default=False, action="store_true", help='publish the bundle')
+    parser.add_option(      '--debug',   dest='debug',   default=False, action="store_true", help='generate a debug build')
+    parser.add_option('-v', '--version', dest='version', default='development', help='create the bundle with this version string')
+
+    (options, args) = parser.parse_args()
+
+    command  = args[0]
+    platform = args[1]
+
+    if not (platform in avail_arch):
+        exit(1)
+
+    if command == 'clean':
+        clean(platform)
+
+    if command == 'build':
+        if options.debug:
+            variant = 'debug'
+        else:
+            variant = 'release'
+
+        package_file = create_package(platform, variant, options.version)
+
+        if options.publish:
+            publish(package_file)
+
     try:
         os.chdir('..')
     except OSError:
