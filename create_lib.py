@@ -117,7 +117,6 @@ def build(aArch):
         print 'Error: Unknown arch:', aArch
         exit(1)
     print 'Building for', aArch, 'using cmd:', make_cmd
-    subprocess.check_call('nmake')
     subprocess.check_call(make_cmd)
 
 def create_bundle(aArch, aVer, aRelease):
