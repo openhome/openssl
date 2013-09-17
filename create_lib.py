@@ -15,6 +15,34 @@ builddir = os.path.join(os.getcwd(), 'build')
 workingdir = os.getcwd()
 print 'Building to', builddir
 
+
+def set_vsvars(architecture="x86"):
+    """
+    Creates a dictionary containing the environment variables set up by vcvarsall.bat
+    and then attempts to update those environment variables.
+
+    architecture - Architecture to pass to vcvarsall.bat. Normally "x86" or "amd64"
+
+    win32-specific
+    """
+
+    try:
+        vscomntools = os.environ['VS110COMNTOOLS']
+    except:
+        vscomntools = os.environ['VS100COMNTOOLS']
+        if vscomntools is None:
+            raise Exception("Neither VS110COMNTOOLS or VS100COMNTOOLS are set in environment.")
+    vsvars32 = os.path.join(vscomntools, '..', '..', 'VC', 'vcvarsall.bat')
+    python = sys.executable
+    process = subprocess.Popen('("%s" %s>nul)&&"%s" -c "import os; print repr(os.environ)"' % (vsvars32, architecture, python), stdout=subprocess.PIPE, shell=True)
+    stdout, _ = process.communicate()
+    exitcode = process.wait()
+    if exitcode != 0:
+        raise Exception("Got error code %s from subprocess!" % exitcode)
+    env_dict = eval(stdout.strip())
+    for key in env_dict:
+        os.environ[key] = env_dict[key]
+
 def copy_files(src, dst_folder):
     if not os.path.exists(dst_folder):
         os.makedirs(dst_folder)
@@ -80,7 +108,7 @@ def configure(aArch, aRelease):
         print 'Error: Linux-ARM target not yet defined'
         exit(1)
     elif (aArch == 'Linux-ppc32'):
-	platform = 'linux-ppc'
+        platform = 'linux-ppc'
     elif (aArch in ['Core-armv5', 'Core-armv6']):
         platform = 'armv5-freertos'
         options = options + ['-msoft-float', '-fexceptions', '-pipe', '-g', '-Wno-psabi', '-mapcs', '-fno-omit-frame-pointer', '-I'+os.path.join(workingdir, 'include'), '-I'+os.path.join(workingdir, 'include', 'lwip'), '-I'+os.path.join(workingdir, 'include', 'lwip', 'posix')
@@ -95,11 +123,13 @@ def configure(aArch, aRelease):
         print 'Error: Unknown arch:', aArch
         exit(1)
     builddir_prefix = '--prefix='+os.path.join(builddir, aArch)
-    subprocess.check_call(['perl', 'Configure'] + [debug_prefix+platform] + options + [builddir_prefix])
+    subprocess.check_call(['perl', 'Configure'] + [debug_prefix+platform] + options + [builddir_prefix], shell=True)
     if (aArch == 'Windows-x86'):
+        set_vsvars('x86');
         subprocess.check_call([os.path.join('ms', 'do_ms')], shell=True)
     elif (aArch == 'Windows-x64'):
         subprocess.check_call([os.path.join('ms', 'do_win64a')], shell=True)
+        set_vsvars('x64');
 
 def build(aArch):
     make_cmd = []
@@ -117,7 +147,7 @@ def build(aArch):
         print 'Error: Unknown arch:', aArch
         exit(1)
     print 'Building for', aArch, 'using cmd:', make_cmd
-    subprocess.check_call(make_cmd)
+    subprocess.check_call(make_cmd, shell=True)
 
 def create_bundle(aArch, aVer, aRelease):
     print 'Packaging OpenSSL for', aArch
