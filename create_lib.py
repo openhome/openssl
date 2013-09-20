@@ -49,6 +49,12 @@ def copy_files(src, dst_folder):
     for fname in glob.iglob(src):
         shutil.copy(fname, os.path.join(dst_folder, os.path.basename(fname)))
 
+def set_env(aArch):
+    if (aArch == 'Windows-x86'):
+        set_vsvars('x86');
+    elif (aArch == 'Windows-x64'):
+        set_vsvars('x64');
+
 def install_headers(aArch):
     # set up include directory
     includedir = os.path.join(workingdir, 'include')
@@ -125,11 +131,9 @@ def configure(aArch, aRelease):
     builddir_prefix = '--prefix='+os.path.join(builddir, aArch)
     subprocess.check_call(['perl', 'Configure'] + [debug_prefix+platform] + options + [builddir_prefix])
     if (aArch == 'Windows-x86'):
-        set_vsvars('x86');
         subprocess.check_call([os.path.join('ms', 'do_ms')], shell=True)
     elif (aArch == 'Windows-x64'):
         subprocess.check_call([os.path.join('ms', 'do_win64a')], shell=True)
-        set_vsvars('x64');
 
 def build(aArch):
     make_cmd = []
@@ -191,6 +195,7 @@ def clean(aArch):
     subprocess.check_call(make_cmd)
 
 def create_package(aArch, aRelease, aVersion):
+    clean(aArch)
     install_headers(aArch)
     configure(aArch, aRelease)
     build(aArch)
@@ -226,6 +231,8 @@ if __name__ == "__main__":
 
     if not (platform in avail_arch):
         exit(1)
+
+    set_env(platform) # set up req'd environment variables
 
     if command == 'clean':
         clean(platform)
