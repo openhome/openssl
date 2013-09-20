@@ -186,7 +186,7 @@ def create_bundle(aArch, aVer, aRelease):
 def clean(aArch):
     make_cmd = []
     if (aArch in ['Windows-x86', 'Windows-x64']):
-        make_cmd = ['nmake', '-f', os.path.join('ms', 'nt.mak'), 'clean']
+        make_cmd = ['nmake', '/f', os.path.join('ms', 'nt.mak'), 'clean']
     elif (aArch in ['Linux-x86', 'Linux-x64', 'Linux-ARM', 'Linux-ppc32', 'Core-armv5', 'Core-armv6', 'Core-ppc32']):
         make_cmd = ['make', 'clean']
     else:
