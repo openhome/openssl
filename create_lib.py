@@ -123,7 +123,7 @@ def configure(aArch, aRelease):
         print 'Error: Unknown arch:', aArch
         exit(1)
     builddir_prefix = '--prefix='+os.path.join(builddir, aArch)
-    subprocess.check_call(['perl', 'Configure'] + [debug_prefix+platform] + options + [builddir_prefix], shell=True)
+    subprocess.check_call(['perl', 'Configure'] + [debug_prefix+platform] + options + [builddir_prefix])
     if (aArch == 'Windows-x86'):
         set_vsvars('x86');
         subprocess.check_call([os.path.join('ms', 'do_ms')], shell=True)
@@ -147,7 +147,7 @@ def build(aArch):
         print 'Error: Unknown arch:', aArch
         exit(1)
     print 'Building for', aArch, 'using cmd:', make_cmd
-    subprocess.check_call(make_cmd, shell=True)
+    subprocess.check_call(make_cmd)
 
 def create_bundle(aArch, aVer, aRelease):
     print 'Packaging OpenSSL for', aArch
