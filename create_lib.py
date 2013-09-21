@@ -199,7 +199,7 @@ def clean(aArch):
 def create_package(aArch, aRelease, aVersion):
     install_headers(aArch)
     configure(aArch, aRelease)
-    clean(aArch)
+    #clean(aArch)
     build(aArch)
     archive_name = create_bundle(aArch, aVersion, aRelease)
     return archive_name
