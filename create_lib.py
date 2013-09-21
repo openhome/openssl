@@ -184,9 +184,11 @@ def create_bundle(aArch, aVer, aRelease):
     return tarname
 
 def clean(aArch):
+    # NOTE: configure() must have been called before this
+
     make_cmd = []
     if (aArch in ['Windows-x86', 'Windows-x64']):
-        make_cmd = ['nmake', '/f', os.path.join('ms', 'nt.mak'), 'clean']
+        make_cmd = ['nmake', '-f', os.path.join('ms', 'nt.mak'), 'clean']
     elif (aArch in ['Linux-x86', 'Linux-x64', 'Linux-ARM', 'Linux-ppc32', 'Core-armv5', 'Core-armv6', 'Core-ppc32']):
         make_cmd = ['make', 'clean']
     else:
@@ -195,9 +197,9 @@ def clean(aArch):
     subprocess.check_call(make_cmd)
 
 def create_package(aArch, aRelease, aVersion):
-    clean(aArch)
     install_headers(aArch)
     configure(aArch, aRelease)
+    clean(aArch)
     build(aArch)
     archive_name = create_bundle(aArch, aVersion, aRelease)
     return archive_name
