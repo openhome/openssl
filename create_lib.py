@@ -2,7 +2,6 @@
 
 import glob
 import os
-import platform
 import shutil
 import subprocess
 import sys
@@ -16,10 +15,6 @@ builddir = os.path.join(os.getcwd(), 'build')
 workingdir = os.getcwd()
 print 'Building to', builddir
 
-"""
-FIXME - The below helper setup functions are taken from ohdevtools.
-Should probably go fetch ohdevtools instead of duplicating functionality.
-"""
 
 def set_vsvars(architecture="x86"):
     """
@@ -53,24 +48,6 @@ def copy_files(src, dst_folder):
         os.makedirs(dst_folder)
     for fname in glob.iglob(src):
         shutil.copy(fname, os.path.join(dst_folder, os.path.basename(fname)))
-
-def windows_program_exists(program):
-    return subprocess.call(["where", "/q", program], shell=False)==0
-
-def other_program_exists(program):
-    nul = open(os.devnull, "w")
-    return subprocess.call(["/bin/sh", "-c", "command -v "+program], shell=False, stdout=nul, stderr=nul)==0
-
-program_exists = windows_program_exists if platform.platform().startswith("Windows") else other_program_exists
-def scp(*args):
-    program = None
-    for p in ["scp", "pscp"]:
-        if program_exists(p):
-            program = p
-            break
-    if program is None:
-        raise "Cannot find scp (or pscp) in the path."
-    subprocess.check_call([program] + list(args))
 
 def set_env(aArch):
     if (aArch == 'Windows-x86'):
@@ -229,7 +206,9 @@ def create_package(aArch, aRelease, aVersion):
 
 def publish(aPackageFile):
     bundle_dest = 'artifacts@core.linn.co.uk:/home/artifacts/public_html/artifacts/openssl/'
-    scp(aPackageFile, bundle_dest)
+    rsync_cmd   = ['rsync', aPackageFile, bundle_dest]
+    print(rsync_cmd)
+    subprocess.check_call(rsync_cmd)
 
 if __name__ == "__main__":
     avail_arch = ['Windows-x86', 'Windows-x64', 'Linux-x86', 'Linux-x64', 'Linux-ARM', 'Linux-ppc32', 'Core-armv5', 'Core-armv6', 'Core-ppc32']
