@@ -204,9 +204,31 @@ def create_package(aArch, aRelease, aVersion):
     archive_name = create_bundle(aArch, aVersion, aRelease)
     return archive_name
 
-def publish(aPackageFile):
+def convert_to_cygwin_path(aPath):
+    """
+    Convert an absolute Windows path to its Cygwin equivalent - useful when
+    transferring a file with rsync
+    """
+    delimiter = '/'
+
+    # change start of path from C:\some\path to c/some/path
+    path = aPath.replace('\\', delimiter)
+    path = path.split(':')
+    path[0] = path[0].lower()
+    path = ''.join(path)
+
+    # prepend '/cygdrive/' to start of path; i.e. c/some/path becomes
+    # /cygdrive/c/some/path
+    pathlist = ['/cygdrive', path]
+    path = delimiter.join(pathlist)
+    return path
+
+def publish(aArch, aPackageFile):
     bundle_dest = 'artifacts@core.linn.co.uk:/home/artifacts/public_html/artifacts/openssl/'
-    rsync_cmd   = ['rsync', aPackageFile, bundle_dest]
+    src_path = aPackageFile
+    if (aArch in ['Windows-x86', 'Windows-x64']):
+        src_path = convert_to_cygwin_path(aPackageFile)
+    rsync_cmd   = ['rsync', src_path, bundle_dest]
     print(rsync_cmd)
     subprocess.check_call(rsync_cmd)
 
@@ -248,7 +270,7 @@ if __name__ == "__main__":
         package_file = create_package(platform, variant, options.version)
 
         if options.publish:
-            publish(package_file)
+            publish(platform, package_file)
 
     try:
         os.chdir('..')
