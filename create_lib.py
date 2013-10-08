@@ -2,6 +2,7 @@
 
 import glob
 import os
+import platform
 import shutil
 import subprocess
 import sys
@@ -15,6 +16,10 @@ builddir = os.path.join(os.getcwd(), 'build')
 workingdir = os.getcwd()
 print 'Building to', builddir
 
+"""
+FIXME - The below helper setup functions are taken from ohdevtools.
+Should probably go fetch ohdevtools instead of duplicating functionality.
+"""
 
 def set_vsvars(architecture="x86"):
     """
@@ -48,6 +53,25 @@ def copy_files(src, dst_folder):
         os.makedirs(dst_folder)
     for fname in glob.iglob(src):
         shutil.copy(fname, os.path.join(dst_folder, os.path.basename(fname)))
+
+def windows_program_exists(program):
+    return subprocess.call(["where", "/q", program], shell=False)==0
+
+def other_program_exists(program):
+    nul = open(os.devnull, "w")
+    return subprocess.call(["/bin/sh", "-c", "command -v "+program], shell=False, stdout=nul, stderr=nul)==0
+
+program_exists = windows_program_exists if platform.platform().startswith("Windows") else other_program_exists
+
+def scp(*args):
+    program = None
+    for p in ["scp", "pscp"]:
+        if program_exists(p):
+            program = p
+            break
+    if program is None:
+        raise "Cannot find scp (or pscp) in the path."
+    subprocess.check_call([program] + list(args))
 
 def set_env(aArch):
     if (aArch == 'Windows-x86'):
@@ -206,8 +230,8 @@ def create_package(aArch, aRelease, aVersion):
 
 def convert_to_cygwin_path(aPath):
     """
-    Convert an absolute Windows path to its Cygwin equivalent - useful when
-    transferring a file with rsync
+    Convert an absolute Windows path from the form C:\some\path to /c/some/path.
+    Useful when using tools that require a Unix-style path, such as scp.
     """
     delimiter = '/'
 
@@ -217,10 +241,9 @@ def convert_to_cygwin_path(aPath):
     path[0] = path[0].lower()
     path = ''.join(path)
 
-    # prepend '/cygdrive/' to start of path; i.e. c/some/path becomes
-    # /cygdrive/c/some/path
-    pathlist = ['/cygdrive', path]
-    path = delimiter.join(pathlist)
+    # prepend '/' to start of path
+    pathlist = ['/', path]
+    path = ''.join(pathlist)
     return path
 
 def publish(aArch, aPackageFile):
@@ -228,9 +251,8 @@ def publish(aArch, aPackageFile):
     src_path = aPackageFile
     if (aArch in ['Windows-x86', 'Windows-x64']):
         src_path = convert_to_cygwin_path(aPackageFile)
-    rsync_cmd   = ['rsync', src_path, bundle_dest]
-    print(rsync_cmd)
-    subprocess.check_call(rsync_cmd)
+    print('scp(' + src_path + ', ' + bundle_dest + ')')
+    scp(src_path, bundle_dest)
 
 if __name__ == "__main__":
     avail_arch = ['Windows-x86', 'Windows-x64', 'Linux-x86', 'Linux-x64', 'Linux-ARM', 'Linux-ppc32', 'Core-armv5', 'Core-armv6', 'Core-ppc32']
