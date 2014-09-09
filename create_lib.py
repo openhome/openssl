@@ -183,6 +183,12 @@ def build(aArch):
     print 'Building for', aArch, 'using cmd:', make_cmd
     subprocess.check_call(make_cmd)
 
+def bundle_name(aArch, aDebug, aVer):
+    debugTag = '-Release'
+    if (aDebug == True):
+        debugTag = '-Debug'
+    return os.path.join(builddir, openssl+'-'+aVer+'-'+aArch+debugTag+'.tar.bz2')
+
 def create_bundle(aArch, aVer, aRelease):
     print 'Packaging OpenSSL for', aArch
     
@@ -196,11 +202,11 @@ def create_bundle(aArch, aVer, aRelease):
         print 'Error: create_bundle unknown arch:', aArch
         exit(1)
 
-    debugtag = '-Release'
+    debug = False
     if (aRelease == 'debug'):
-        debugtag = '-Debug'
+        debug = True
 
-    tarname = os.path.join(builddir, openssl+'-'+aVer+'-'+aArch+debugtag+'.tar.bz2')
+    tarname = bundle_name(aArch, debug, aVer)
     print 'Creating ', tarname
     tar = tarfile.open(tarname, 'w:bz2')
     tar.add(os.path.join(builddir, aArch, 'include'), arcname=os.path.join('openssl', 'include'))
@@ -252,13 +258,16 @@ def convert_to_cygwin_path(aPath):
     path = ''.join(pathlist)
     return path
 
+def platform_specific_path(aArch, aPackageFile):
+    if (aArch in ['Windows-x86', 'Windows-x64']):
+        return convert_to_cygwin_path(aPackageFile)
+    else:
+        return aPackageFile
+
 def publish(aArch, aPackageFile):
     bundle_dest = 'artifacts@core.linn.co.uk:/home/artifacts/public_html/artifacts/openssl/'
-    src_path = aPackageFile
-    if (aArch in ['Windows-x86', 'Windows-x64']):
-        src_path = convert_to_cygwin_path(aPackageFile)
-    print('scp(' + src_path + ', ' + bundle_dest + ')')
-    scp(src_path, bundle_dest)
+    print('scp(' + aPackageFile + ', ' + bundle_dest + ')')
+    scp(aPackageFile, bundle_dest)
 
 if __name__ == "__main__":
     avail_arch = ['Windows-x86', 'Windows-x64', 'Linux-x86', 'Linux-x64', 'Linux-ARM', 'Linux-ppc32', 'Mac-x86', 'Mac-x64', 'Core-armv5', 'Core-armv6', 'Core-ppc32']
@@ -272,14 +281,16 @@ if __name__ == "__main__":
     # second arg is the platform
 
     parser = optparse.OptionParser()
+    parser.add_option(      '--configure', dest='configure', default=False, action="store_true", help='configure the project')
+    parser.add_option('-c', '--clean', dest='clean', default=False, action="store_true", help='clean the project')
+    parser.add_option('-b', '--build', dest='build', default = False, action="store_true", help='build the project')
     parser.add_option('-p', '--publish', dest='publish', default=False, action="store_true", help='publish the bundle')
-    parser.add_option(      '--debug',   dest='debug',   default=False, action="store_true", help='generate a debug build')
+    parser.add_option('-d', '--debug',   dest='debug',   default=False, action="store_true", help='generate a debug variant')
     parser.add_option('-v', '--version', dest='version', default='development', help='create the bundle with this version string')
 
     (options, args) = parser.parse_args()
 
-    command  = args[0]
-    platform = args[1]
+    platform = args[0]
 
     if not (platform in avail_arch):
         print 'Target platform not available:', platform
@@ -287,19 +298,33 @@ if __name__ == "__main__":
 
     set_env(platform) # set up req'd environment variables
 
-    if command == 'clean':
+    if options.configure:
+       variant = 'release'
+       if options.debug:
+           variant = 'debug'
+       install_headers(platform)
+       configure(platform, variant)
+
+    if options.clean:
         clean(platform)
 
-    if command == 'build':
+    debug = False
+    if options.debug:
+        debug = True
+    archive_name = platform_specific_path(platform, bundle_name(platform, debug, options.version))
+
+    if options.build:
+        variant = 'release'
         if options.debug:
             variant = 'debug'
-        else:
-            variant = 'release'
+        build(platform)
+        create_bundle(platform, options.version, variant)
 
-        package_file = create_package(platform, variant, options.version)
-
-        if options.publish:
-            publish(platform, package_file)
+    if options.publish:
+        if not os.path.isfile(archive_name):
+            print 'publish archive does not exist:', archive_name
+            exit(1)
+        publish(platform, archive_name)
 
     try:
         os.chdir('..')
