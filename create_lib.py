@@ -140,10 +140,10 @@ def configure(aArch, aRelease):
     elif (aArch == 'Linux-ppc32'):
         platform = 'linux-ppc'
     elif (aArch == 'Mac-x64'):
-        platform = 'mac64'
+        platform = 'darwin-x86_64-clang'
         options = options + ['-DPLATFORM_MACOSX_GNU', '-mmacosx-version-min=10.7']
     elif (aArch == 'Mac-x86'):
-        platform = 'mac86'
+        platform = 'darwin-i386-clang'
         options = options + ['-DPLATFORM_MACOSX_GNU', '-mmacosx-version-min=10.7', '-m32']
     elif (aArch in ['Core-armv5', 'Core-armv6']):
         platform = 'armv5-freertos'
