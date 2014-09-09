@@ -311,7 +311,7 @@ if __name__ == "__main__":
     debug = False
     if options.debug:
         debug = True
-    archive_name = platform_specific_path(platform, bundle_name(platform, debug, options.version))
+    archive_name = bundle_name(platform, debug, options.version)
 
     if options.build:
         variant = 'release'
