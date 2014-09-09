@@ -232,6 +232,19 @@ def clean(aArch):
         exit(1)
     subprocess.check_call(make_cmd)
 
+    platform_build_dir = os.path.join(builddir, aArch)
+    if os.path.isdir(platform_build_dir):
+        print 'Deleting: ', platform_build_dir
+        shutil.rmtree(platform_build_dir)
+
+    file_list = os.listdir(builddir)
+    for f in file_list:
+        if aArch in f:
+            filepath = os.path.join(builddir, f)
+            if os.path.isfile(filepath):
+                print 'Deleting:', f
+                os.remove(filepath)
+
 def create_package(aArch, aRelease, aVersion):
     install_headers(aArch)
     configure(aArch, aRelease)
