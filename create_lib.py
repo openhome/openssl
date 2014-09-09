@@ -139,6 +139,12 @@ def configure(aArch, aRelease):
         exit(1)
     elif (aArch == 'Linux-ppc32'):
         platform = 'linux-ppc'
+    elif (aArch == 'Mac-x64'):
+        platform = 'mac64'
+        options = options + ['-DPLATFORM_MACOSX_GNU', '-mmacosx-version-min=10.7']
+    elif (aArch == 'Mac-x86'):
+        platform = 'mac86'
+        options = options + ['-DPLATFORM_MACOSX_GNU', '-mmacosx-version-min=10.7', '-m32']
     elif (aArch in ['Core-armv5', 'Core-armv6']):
         platform = 'armv5-freertos'
         options = options + ['-msoft-float', '-fexceptions', '-pipe', '-g', '-Wno-psabi', '-mapcs', '-fno-omit-frame-pointer', '-I'+os.path.join(workingdir, 'include'), '-I'+os.path.join(workingdir, 'include', 'lwip'), '-I'+os.path.join(workingdir, 'include', 'lwip', 'posix')
@@ -150,7 +156,7 @@ def configure(aArch, aRelease):
         ]
         os.environ['PATH'] += os.pathsep + '/opt/rtems-4.11/bin'
     else:
-        print 'Error: Unknown arch:', aArch
+        print 'Error: configure unknown arch:', aArch
         exit(1)
     builddir_prefix = '--prefix='+os.path.join(builddir, aArch)
     subprocess.check_call(['perl', 'Configure'] + [debug_prefix+platform] + options + [builddir_prefix])
@@ -163,7 +169,7 @@ def build(aArch):
     make_cmd = []
     if (aArch in ['Windows-x86', 'Windows-x64']):
         make_cmd = ['nmake', '-f', os.path.join('ms', 'nt.mak'), 'install']
-    elif (aArch in ['Linux-x86', 'Linux-x64', 'Linux-ARM', 'Linux-ppc32', 'Core-armv5', 'Core-armv6', 'Core-ppc32']):
+    elif (aArch in ['Linux-x86', 'Linux-x64', 'Linux-ARM', 'Linux-ppc32', 'Mac-x86', 'Mac-x64', 'Core-armv5', 'Core-armv6', 'Core-ppc32']):
         make_cmd = ['make', 'DIRS=\"crypto\"', 'all', 'install_sw']
         # The following command would be preferable.
         # However:
@@ -172,7 +178,7 @@ def build(aArch):
         #
         #make_cmd = ['make', 'depend' 'buildcrypto', 'install_sw']
     else:
-        print 'Error: Unknown arch:', aArch
+        print 'Error: build unknown arch:', aArch
         exit(1)
     print 'Building for', aArch, 'using cmd:', make_cmd
     subprocess.check_call(make_cmd)
@@ -184,10 +190,10 @@ def create_bundle(aArch, aVer, aRelease):
     windows_symbols = 'lib.pdb'
     if (aArch in ['Windows-x86', 'Windows-x64']):
         cryptolib = 'libeay32.lib'
-    elif (aArch in ['Linux-x86', 'Linux-x64', 'Linux-ARM', 'Linux-ppc32', 'Core-armv5', 'Core-armv6', 'Core-ppc32']):
+    elif (aArch in ['Linux-x86', 'Linux-x64', 'Linux-ARM', 'Linux-ppc32', 'Mac-x64', 'Mac-x86', 'Core-armv5', 'Core-armv6', 'Core-ppc32']):
         cryptolib = 'libcrypto.a'
     else:
-        print 'Error: Unknown arch:', aArch
+        print 'Error: create_bundle unknown arch:', aArch
         exit(1)
 
     debugtag = '-Release'
@@ -213,10 +219,10 @@ def clean(aArch):
     make_cmd = []
     if (aArch in ['Windows-x86', 'Windows-x64']):
         make_cmd = ['nmake', '-f', os.path.join('ms', 'nt.mak'), 'clean']
-    elif (aArch in ['Linux-x86', 'Linux-x64', 'Linux-ARM', 'Linux-ppc32', 'Core-armv5', 'Core-armv6', 'Core-ppc32']):
+    elif (aArch in ['Linux-x86', 'Linux-x64', 'Linux-ARM', 'Linux-ppc32', 'Mac-x86', 'Mac-x64', 'Core-armv5', 'Core-armv6', 'Core-ppc32']):
         make_cmd = ['make', 'clean']
     else:
-        print 'Error: Unknown arch:', aArch
+        print 'Error: clean unknown arch:', aArch
         exit(1)
     subprocess.check_call(make_cmd)
 
@@ -255,7 +261,7 @@ def publish(aArch, aPackageFile):
     scp(src_path, bundle_dest)
 
 if __name__ == "__main__":
-    avail_arch = ['Windows-x86', 'Windows-x64', 'Linux-x86', 'Linux-x64', 'Linux-ARM', 'Linux-ppc32', 'Core-armv5', 'Core-armv6', 'Core-ppc32']
+    avail_arch = ['Windows-x86', 'Windows-x64', 'Linux-x86', 'Linux-x64', 'Linux-ARM', 'Linux-ppc32', 'Mac-x86', 'Mac-x64', 'Core-armv5', 'Core-armv6', 'Core-ppc32']
     try:
         os.chdir(openssl)
     except OSError:
@@ -276,6 +282,7 @@ if __name__ == "__main__":
     platform = args[1]
 
     if not (platform in avail_arch):
+        print 'Target platform not available:', platform
         exit(1)
 
     set_env(platform) # set up req'd environment variables
