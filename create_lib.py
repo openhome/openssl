@@ -324,7 +324,7 @@ if __name__ == "__main__":
         if not os.path.isfile(archive_name):
             print 'publish archive does not exist:', archive_name
             exit(1)
-        publish(platform, archive_name)
+        publish(platform, platform_specific_path(platform, archive_name))
 
     try:
         os.chdir('..')
