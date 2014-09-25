@@ -193,11 +193,14 @@ def create_bundle(aArch, aVer, aRelease):
     print 'Packaging OpenSSL for', aArch
     
     cryptolib = ''
+    ssllib = ''
     windows_symbols = 'lib.pdb'
     if (aArch in ['Windows-x86', 'Windows-x64']):
         cryptolib = 'libeay32.lib'
+        ssllib = 'ssleay32.lib'
     elif (aArch in ['Linux-x86', 'Linux-x64', 'Linux-ARM', 'Linux-ppc32', 'Mac-x64', 'Mac-x86', 'Core-armv5', 'Core-armv6', 'Core-ppc32']):
         cryptolib = 'libcrypto.a'
+        ssllib = 'libssl.a'
     else:
         print 'Error: create_bundle unknown arch:', aArch
         exit(1)
@@ -211,6 +214,7 @@ def create_bundle(aArch, aVer, aRelease):
     tar = tarfile.open(tarname, 'w:bz2')
     tar.add(os.path.join(builddir, aArch, 'include'), arcname=os.path.join('openssl', 'include'))
     tar.add(os.path.join(builddir, aArch, 'lib', cryptolib), arcname=os.path.join('openssl', 'lib', cryptolib))
+    tar.add(os.path.join(builddir, aArch, 'lib', ssllib), arcname=os.path.join('openssl', 'lib', ssllib))
     if (aArch in ['Windows-x86', 'Windows-x64']):
         windows_tmp = 'tmp32'
         if (aRelease == 'debug'):
