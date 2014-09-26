@@ -2,11 +2,7 @@ openssl
 
 Static library providing OpenSSL's cryptography routines.
 
-To build the OpenSSL cryptography library and package it for a particular platform, call
-
-python create_lib.py <platform> <version> ?debug
-
-where platform is one of:
+OpenSSL can be built for the following platforms:
 
 Windows-x86
 Windows-x64
@@ -17,16 +13,25 @@ Core-armv5
 Core-armv6
 Core-ppc32
 
-and debug is an optional flag.
 
+The library can be built via the create_lib.py script. For example, to generate debug build 999.888.777 for Linux-x86 which is then copied to the artifacts server, the following command would be issued:
+
+python create_lib.py --platform Linux-x86 --configure --clean --build --publish --version 999.888.777 --debug
 
 The resulting libraries will be built/installed into a top-level build directory, under a subdirectory of the platform name.
 
-Packages of header files and the libraries themselves will also be placed into the build directory, with names of the form:
+The '--build' option will also generate a package containing header files and the libraries, which will be placed into the build directory with a name of the form:
 
-openssl-<external_version>-<internal_version>-<platform>-Release.tar.bz2
+openssl-<external_version>-<internal_version>-<platform>-<variant>.tar.bz2
 
-or, for debug builds:
+where:
+'<external_version>'    is the version of the OpenSSL library on which the release is based,
+'<internal_version>'    is a custom version number
+'<platform>'            is one of the above platforms
+'<variant>'             is 'Debug' or 'Release'
 
-openssl-<external_version>-<internal_version>-<platform>-Debug.tar.bz2
 
+The '--platform' option is always required, while other options can be mixed and matched.
+A full list of available options can be accessed by issuing:
+
+python create_lib.py --help

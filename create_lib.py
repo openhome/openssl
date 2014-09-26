@@ -300,50 +300,53 @@ if __name__ == "__main__":
     # second arg is the platform
 
     parser = optparse.OptionParser()
-    parser.add_option(      '--configure', dest='configure', default=False, action="store_true", help='configure the project')
-    parser.add_option('-c', '--clean', dest='clean', default=False, action="store_true", help='clean the project')
-    parser.add_option('-b', '--build', dest='build', default = False, action="store_true", help='build the project')
-    parser.add_option('-p', '--publish', dest='publish', default=False, action="store_true", help='publish the bundle')
-    parser.add_option('-d', '--debug',   dest='debug',   default=False, action="store_true", help='generate a debug variant')
-    parser.add_option('-v', '--version', dest='version', default='development', help='create the bundle with this version string')
+    parser.add_option('',   '--platform', dest='platform', default=None, help='target platform (non-optional)')
+    parser.add_option('',   '--configure', dest='configure', default=False, action="store_true", help='configure the project')
+    parser.add_option('',   '--clean', dest='clean', default=False, action="store_true", help='clean the project')
+    parser.add_option('',   '--build', dest='build', default = False, action="store_true", help='build the project')
+    parser.add_option('',   '--publish', dest='publish', default=False, action="store_true", help='publish the bundle')
+    parser.add_option('',   '--debug',   dest='debug',   default=False, action="store_true", help='generate a debug variant')
+    parser.add_option('',   '--version', dest='version', default='development', help='create the bundle with this version string')
 
     (options, args) = parser.parse_args()
 
-    platform = args[0]
-
-    if not (platform in avail_arch):
-        print 'Target platform not available:', platform
+    if (options.platform == None):
+        print 'Error: --platform must be set'
         exit(1)
 
-    set_env(platform) # set up req'd environment variables
+    if not (options.platform in avail_arch):
+        print 'Error: Target platform not available:', options.platform
+        exit(1)
+
+    set_env(options.platform) # set up req'd environment variables
 
     if options.configure:
        variant = 'release'
        if options.debug:
            variant = 'debug'
-       install_headers(platform)
-       configure(platform, variant)
+       install_headers(options.platform)
+       configure(options.platform, variant)
 
     if options.clean:
-        clean(platform)
+        clean(options.platform)
 
     debug = False
     if options.debug:
         debug = True
-    archive_name = bundle_name(platform, debug, options.version)
+    archive_name = bundle_name(options.platform, debug, options.version)
 
     if options.build:
         variant = 'release'
         if options.debug:
             variant = 'debug'
-        build(platform)
-        create_bundle(platform, options.version, variant)
+        build(options.platform)
+        create_bundle(options.platform, options.version, variant)
 
     if options.publish:
         if not os.path.isfile(archive_name):
             print 'publish archive does not exist:', archive_name
             exit(1)
-        publish(platform, platform_specific_path(platform, archive_name))
+        publish(options.platform, platform_specific_path(options.platform, archive_name))
 
     try:
         os.chdir('..')
