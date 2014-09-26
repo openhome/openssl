@@ -149,12 +149,10 @@ def configure(aArch, aRelease):
         platform = 'armv5-freertos'
         options = options + ['-msoft-float', '-fexceptions', '-pipe', '-g', '-Wno-psabi', '-mapcs', '-fno-omit-frame-pointer', '-I'+os.path.join(workingdir, 'include'), '-I'+os.path.join(workingdir, 'include', 'lwip'), '-I'+os.path.join(workingdir, 'include', 'lwip', 'posix')
         ]
-        os.environ['PATH'] += os.pathsep + '/opt/rtems-4.11/bin'
     elif (aArch == 'Core-ppc32'):
         platform = 'powerpc-rtems'
         options = options + ['-mcpu=403', '-msoft-float', '-fexceptions', '-pipe', '-g', '-I'+os.path.join(workingdir, 'include'), '-I'+os.path.join(workingdir, 'include', 'lwip'), '-I'+os.path.join(workingdir, 'include', 'lwip', 'posix')
         ]
-        os.environ['PATH'] += os.pathsep + '/opt/rtems-4.11/bin'
     else:
         print 'Error: configure unknown arch:', aArch
         exit(1)
@@ -170,7 +168,11 @@ def build(aArch):
     if (aArch in ['Windows-x86', 'Windows-x64']):
         make_cmd = ['nmake', '-f', os.path.join('ms', 'nt.mak'), 'install']
     elif (aArch in ['Linux-x86', 'Linux-x64', 'Linux-ARM', 'Linux-ppc32', 'Mac-x86', 'Mac-x64', 'Core-armv5', 'Core-armv6', 'Core-ppc32']):
-        make_cmd = ['make', 'DIRS=crypto ssl', 'all', 'install_sw']
+        if (aArch in ['Core-armv5', 'Core-armv6']):
+            os.environ['PATH'] += os.pathsep + '/opt/rtems-4.11/bin'
+        elif (aArch == 'Core-ppc32'):
+            os.environ['PATH'] += os.pathsep + '/opt/rtems-4.11/bin'
+        make_cmd = ['make', 'DIRS=crypto', 'all', 'install_sw']
         # The following command would be preferable.
         # However:
         #   Core-armv6 chokes when 'depend' is added
