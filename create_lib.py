@@ -300,7 +300,7 @@ if __name__ == "__main__":
     # second arg is the platform
 
     parser = optparse.OptionParser()
-    parser.add_option('',   '--platform', dest='platform', default=None, help='target platform (non-optional)')
+    parser.add_option('',   '--platform', dest='platform', default=None, help='target platform (required)')
     parser.add_option('',   '--configure', dest='configure', default=False, action="store_true", help='configure the project')
     parser.add_option('',   '--clean', dest='clean', default=False, action="store_true", help='clean the project')
     parser.add_option('',   '--build', dest='build', default = False, action="store_true", help='build the project')
