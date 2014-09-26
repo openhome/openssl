@@ -172,7 +172,7 @@ def build(aArch):
             os.environ['PATH'] += os.pathsep + '/opt/rtems-4.11/bin'
         elif (aArch == 'Core-ppc32'):
             os.environ['PATH'] += os.pathsep + '/opt/rtems-4.11/bin'
-        make_cmd = ['make', 'DIRS=crypto', 'all', 'install_sw']
+        make_cmd = ['make', 'DIRS=crypto ssl', 'all', 'install_sw']
         # The following command would be preferable.
         # However:
         #   Core-armv6 chokes when 'depend' is added
