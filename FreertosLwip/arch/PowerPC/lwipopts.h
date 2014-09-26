@@ -71,6 +71,8 @@ ${LWIP_SOURCE}/include/lwip/arch.h
 #define LWIP_CHKSUM_ALGORITHM           2
 #define LWIP_CHECKSUM_ON_COPY           1
 
+#define LWIP_TIMEVAL_PRIVATE            0
+
 #define LWIP_RAW                        0
 
 #define PBUF_POOL_SIZE                  512

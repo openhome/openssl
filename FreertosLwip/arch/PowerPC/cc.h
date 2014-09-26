@@ -37,6 +37,8 @@ typedef u32_t              mem_ptr_t;
 /* prototypes for printf() and abort() */
 #include <stdio.h>
 #include <stdlib.h>
+#include <sys/time.h>
+
 /* Plaform specific diagnostic output */
 #define LWIP_PLATFORM_DIAG(x)           printf x ; fflush(NULL)
 #define LWIP_PLATFORM_ASSERT(x)         do { if(!(x)) { while(1); } } while(0)
