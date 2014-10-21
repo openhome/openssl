@@ -345,7 +345,7 @@ int lwip_fcntl(int s, int cmd, int val);
 #if LWIP_COMPAT_SOCKETS
 #define accept(a,b,c)         lwip_accept(a,b,c)
 #define bind(a,b,c)           lwip_bind(a,b,c)
-#define shutdown(a,b)         lwip_shutdown(a,b)
+//#define shutdown(a,b)         lwip_shutdown(a,b) /* shutdown conflicts with a function in OpenSSL */
 #define closesocket(s)        lwip_close(s)
 #define connect(a,b,c)        lwip_connect(a,b,c)
 #define getsockname(a,b,c)    lwip_getsockname(a,b,c)
