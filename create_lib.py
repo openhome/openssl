@@ -163,6 +163,19 @@ def configure(aArch, aRelease):
     elif (aArch == 'Windows-x64'):
         subprocess.check_call([os.path.join('ms', 'do_win64a')], shell=True)
 
+    if (aArch in ['Windows-x86', 'Windows-x64']):
+        # Create openssl*/tmp32 and openssl*/tmp32.dbg dirs because clean will
+        # return an error status on Windows if we try to clean with no previous
+        # build.
+        if (aRelease == 'debug'):
+            tmpdirdbg = os.path.join(os.getcwd(), 'tmp32.dbg')
+            if not os.path.exists(tmpdirdbg):
+                os.makedirs(tmpdirdbg)
+        else:
+            tmpdir = os.path.join(os.getcwd(), 'tmp32')
+            if not os.path.exists(tmpdir):
+                os.makedirs(tmpdir)
+
 def build(aArch):
     make_cmd = []
     if (aArch in ['Windows-x86', 'Windows-x64']):
@@ -230,11 +243,6 @@ def clean(aArch):
 
     make_cmd = []
     if (aArch in ['Windows-x86', 'Windows-x64']):
-        tmpdir = os.path.join(os.getcwd(), 'tmp32')
-        # Create openssl*/tmp32 dir because clean will return an error status
-        # on Windows if we try to clean with no previous build.
-        if not os.path.exists(tmpdir):
-            os.makedirs(tmpdir)
         make_cmd = ['nmake', '-f', os.path.join('ms', 'nt.mak'), 'clean']
     elif (aArch in ['Linux-x86', 'Linux-x64', 'Linux-ARM', 'Linux-ppc32', 'Mac-x86', 'Mac-x64', 'Core-armv5', 'Core-armv6', 'Core-ppc32']):
         make_cmd = ['make', 'clean']
