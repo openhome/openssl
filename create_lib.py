@@ -230,6 +230,11 @@ def clean(aArch):
 
     make_cmd = []
     if (aArch in ['Windows-x86', 'Windows-x64']):
+        tmpdir = os.path.join(os.getcwd(), 'tmp32')
+        # Create openssl*/tmp32 dir because clean will return an error status
+        # on Windows if we try to clean with no previous build.
+        if not os.path.exists(tmpdir):
+            os.makedirs(tmpdir)
         make_cmd = ['nmake', '-f', os.path.join('ms', 'nt.mak'), 'clean']
     elif (aArch in ['Linux-x86', 'Linux-x64', 'Linux-ARM', 'Linux-ppc32', 'Mac-x86', 'Mac-x64', 'Core-armv5', 'Core-armv6', 'Core-ppc32']):
         make_cmd = ['make', 'clean']
