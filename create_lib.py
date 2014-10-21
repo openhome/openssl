@@ -321,11 +321,14 @@ if __name__ == "__main__":
     set_env(options.platform) # set up req'd environment variables
 
     if options.configure:
-       variant = 'release'
-       if options.debug:
-           variant = 'debug'
-       install_headers(options.platform)
-       configure(options.platform, variant)
+        if not os.path.exists(builddir):
+            os.makedirs(builddir)
+
+        variant = 'release'
+        if options.debug:
+            variant = 'debug'
+        install_headers(options.platform)
+        configure(options.platform, variant)
 
     if options.clean:
         clean(options.platform)
