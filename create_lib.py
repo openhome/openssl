@@ -106,7 +106,7 @@ def configure(aArch, aRelease):
     print 'Configuring for', aArch, aRelease
 
     platform = ''
-    options = ['no-ec', 'no-ui']
+    options = []
     #options = ['no-err']
     # Does OpenSSL actually act on all these options?
     # options = ['no-idea', 'no-camellia', 'no-seed', 'no-bf', 'no-cast'

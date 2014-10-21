@@ -179,6 +179,7 @@
 #endif
 #endif
 
+#if !defined(OPENSSL_SYSNAME_CORE_PLATFORM)
 
 /* There are 5 types of terminal interface supported,
  * TERMIO, TERMIOS, VMS, MSDOS and SGTTY
@@ -315,6 +316,8 @@ static int noecho_fgets(char *buf, int size, FILE *tty);
 #endif
 static int read_string_inner(UI *ui, UI_STRING *uis, int echo, int strip_nl);
 
+#endif /* !defined(OPENSSL_SYSNAME_CORE_PLATFORM) */
+
 static int read_string(UI *ui, UI_STRING *uis);
 static int write_string(UI *ui, UI_STRING *uis);
 
@@ -339,6 +342,30 @@ UI_METHOD *UI_OpenSSL(void)
 	{
 	return &ui_openssl;
 	}
+
+#if defined(OPENSSL_SYSNAME_CORE_PLATFORM)
+
+static int open_console(UI *ui)
+{
+    return 0;
+}
+
+static int read_string(UI *ui, UI_STRING *uis)
+{
+    return 0;
+}
+
+static int write_string(UI *ui, UI_STRING *uis)
+{
+    return 1;
+}
+
+static int close_console(UI *ui)
+{
+    return 1;
+}
+
+#else
 
 /* The following function makes sure that info and error strings are printed
    before any prompt. */
@@ -716,3 +743,5 @@ static int noecho_fgets(char *buf, int size, FILE *tty)
 	return(strlen(buf));
 	}
 #endif
+
+#endif /* defined(OPENSSL_SYSNAME_CORE_PLATFORM) */
