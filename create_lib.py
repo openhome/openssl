@@ -128,7 +128,7 @@ def configure(aArch, aRelease):
         options = options + ['no-asm']
     elif (aArch == 'Windows-x64'):
         platform = 'oh-windows-x64-vc'
-        options = ['no-asm']
+        options = options + ['no-asm']
     elif (aArch == 'Linux-x86'):
         platform = 'oh-linux-x86-gcc'
     elif (aArch == 'Linux-x64'):

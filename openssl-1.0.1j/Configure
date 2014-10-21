@@ -648,7 +648,9 @@ my @MK1MF_Builds=qw(VC-WIN64I VC-WIN64A
 		    VC-NT VC-CE VC-WIN32 debug-VC-WIN32
 		    BC-32 
 		    netware-clib netware-clib-bsdsock
-		    netware-libc netware-libc-bsdsock);
+		    netware-libc netware-libc-bsdsock
+		    oh-windows-x86-vc debug-oh-windows-x86-vc
+		    oh-windows-x64-vc debug-oh-windows-x64-vc);
 
 my $idx = 0;
 my $idx_cc = $idx++;
