@@ -202,6 +202,12 @@ extern "C" {
 #define readsocket(s,b,n)		recv((s),(b),(n),0)
 #define writesocket(s,b,n)		send((s),(b),(n),0)
 #endif
+#elif defined(OPENSSL_SYSNAME_CORE_PLATFORM)
+#include <lwip/sockets.h>
+#define get_last_socket_error() errno
+#define clear_socket_error()    errno=0
+#define readsocket(s,b,n)       lwip_recv((s),(char*)(b),(n),0)
+#define writesocket(s,b,n)      lwip_send((s),(char*)(b),(n),0)
 #else
 #define get_last_socket_error()	errno
 #define clear_socket_error()	errno=0
@@ -494,7 +500,24 @@ static unsigned int _strlen31(const char *str)
 /*************/
 
 #ifdef USE_SOCKETS
-#  if defined(WINDOWS) || defined(MSDOS)
+#  if defined(OPENSSL_SYSNAME_CORE_PLATFORM)
+#       include <lwip/sockets.h>
+#       include <lwip/netdb.h>
+#       define SSLeay_Write(a,b,c)  lwip_send((a),(b),(c),0)
+#       define SSLeay_Read(a,b,c)   lwip_recv((a),(b),(c),0)
+#       define SHUTDOWN(fd)     { lwip_shutdown((fd),0); lwip_close(fd); }
+#       define SHUTDOWN2(fd)    { lwip_shutdown((fd),2); lwip_close(fd); }
+#       ifndef INVALID_SOCKET
+#           define INVALID_SOCKET (-1)
+#       endif
+        struct  servent {
+            char    *s_name;        /* official service name */
+            char    **s_aliases;    /* alias list */
+            int     s_port;         /* port # */
+            char    *s_proto;       /* protocol to use */
+        };
+        static struct servent *getservbyname(const char *name, const char *proto)  { return NULL; }
+#  elif defined(WINDOWS) || defined(MSDOS)
       /* windows world */
 
 #    ifdef OPENSSL_NO_SOCK

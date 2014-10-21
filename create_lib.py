@@ -9,7 +9,7 @@ import sys
 import tarfile
 import optparse
 
-openssl = 'openssl-1.0.0d'
+openssl = 'openssl-1.0.1j'
 freertos = 'FreertosLwip'
 
 builddir = os.path.join(os.getcwd(), 'build')
@@ -106,7 +106,7 @@ def configure(aArch, aRelease):
     print 'Configuring for', aArch, aRelease
 
     platform = ''
-    options = []
+    options = ['no-ec', 'no-ui']
     #options = ['no-err']
     # Does OpenSSL actually act on all these options?
     # options = ['no-idea', 'no-camellia', 'no-seed', 'no-bf', 'no-cast'
@@ -124,33 +124,33 @@ def configure(aArch, aRelease):
     if (aRelease == 'debug'):
         debug_prefix = 'debug-'
     if (aArch == 'Windows-x86'):
-        platform = 'VC-WIN32'
+        platform = 'oh-windows-x86-vc'
         options = options + ['no-asm']
     elif (aArch == 'Windows-x64'):
-        platform = 'VC-WIN64A'
+        platform = 'oh-windows-x64-vc'
         options = ['no-asm']
     elif (aArch == 'Linux-x86'):
-        platform = 'linux-generic32'
+        platform = 'oh-linux-x86-gcc'
     elif (aArch == 'Linux-x64'):
-        platform = 'linux-generic64'
+        platform = 'oh-linux-x64-gcc'
     elif (aArch == 'Linux-ARM'):
         # find compiler option/location for this and add to OpenSSL Configure file
         print 'Error: Linux-ARM target not yet defined'
         exit(1)
     elif (aArch == 'Linux-ppc32'):
-        platform = 'linux-ppc'
+        platform = 'oh-linux-ppc32-gcc'
     elif (aArch == 'Mac-x64'):
-        platform = 'darwin-x86_64-clang'
+        platform = 'oh-mac-x64-clang'
         options = options + ['-DPLATFORM_MACOSX_GNU', '-mmacosx-version-min=10.7']
     elif (aArch == 'Mac-x86'):
-        platform = 'darwin-i386-clang'
+        platform = 'oh-mac-x86-clang'
         options = options + ['-DPLATFORM_MACOSX_GNU', '-mmacosx-version-min=10.7', '-m32']
     elif (aArch in ['Core-armv5', 'Core-armv6']):
-        platform = 'armv5-freertos'
+        platform = 'oh-core-armv5-rtems'
         options = options + ['-msoft-float', '-fexceptions', '-pipe', '-g', '-Wno-psabi', '-mapcs', '-fno-omit-frame-pointer', '-I'+os.path.join(workingdir, 'include'), '-I'+os.path.join(workingdir, 'include', 'lwip'), '-I'+os.path.join(workingdir, 'include', 'lwip', 'posix')
         ]
     elif (aArch == 'Core-ppc32'):
-        platform = 'powerpc-rtems'
+        platform = 'oh-core-ppc32-rtems'
         options = options + ['-mcpu=403', '-msoft-float', '-fexceptions', '-pipe', '-g', '-I'+os.path.join(workingdir, 'include'), '-I'+os.path.join(workingdir, 'include', 'lwip'), '-I'+os.path.join(workingdir, 'include', 'lwip', 'posix')
         ]
     else:

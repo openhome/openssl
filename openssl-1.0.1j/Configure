@@ -164,6 +164,32 @@ my %table=(
 #"bl-4c-ri",	"${tcc}:${tflags}::${tlib}:${bits1}BN_LLONG RC4_CHAR RC4_INDEX:${tbn_mul}::",
 #"b2-is-ri-dp",	"${tcc}:${tflags}::${tlib}:${bits2}IDEA_SHORT RC4_INDEX DES_PTR:${tbn_mul}::",
 
+
+# Custom configs for target platforms
+# Linux
+"oh-linux-x86-gcc","gcc:-DTERMIO -DOPENSSL_NO_SCTP -O3 -fomit-frame-pointer -Wall::-D_REENTRANT::-ldl:BN_LLONG RC4_CHAR RC4_CHUNK DES_INT DES_UNROLL BF_PTR:${no_asm}:dlfcn:linux-shared:-fPIC::.so.\$(SHLIB_MAJOR).\$(SHLIB_MINOR)",
+"debug-oh-linux-x86-gcc","gcc:-DBN_DEBUG -DREF_CHECK -DCONF_DEBUG -DCRYPTO_MDEBUG -DTERMIO -DOPENSSL_NO_SCTP -g -Wall::-D_REENTRANT::-ldl:BN_LLONG RC4_CHAR RC4_CHUNK DES_INT DES_UNROLL BF_PTR:${no_asm}:dlfcn:linux-shared:-fPIC::.so.\$(SHLIB_MAJOR).\$(SHLIB_MINOR)",
+"oh-linux-x64-gcc","gcc:-DTERMIO -DOPENSSL_NO_SCTP -O3 -Wall::-D_REENTRANT::-ldl:SIXTY_FOUR_BIT_LONG RC4_CHAR RC4_CHUNK DES_INT DES_UNROLL BF_PTR:${no_asm}:dlfcn:linux-shared:-fPIC::.so.\$(SHLIB_MAJOR).\$(SHLIB_MINOR)",
+"debug-oh-linux-x64-gcc","gcc:-DBN_DEBUG -DREF_CHECK -DCONF_DEBUG -DCRYPTO_MDEBUG -DTERMIO -DOPENSSL_NO_SCTP -g -Wall::-D_REENTRANT::-ldl:SIXTY_FOUR_BIT_LONG RC4_CHAR RC4_CHUNK DES_INT DES_UNROLL BF_PTR:${no_asm}:dlfcn:linux-shared:-fPIC::.so.\$(SHLIB_MAJOR).\$(SHLIB_MINOR)",
+"oh-linux-ppc32-gcc","gcc:-DB_ENDIAN -DTERMIO -DOPENSSL_NO_SCTP -O3 -Wall::-D_REENTRANT::-ldl:BN_LLONG RC4_CHAR RC4_CHUNK DES_RISC1 DES_UNROLL:${ppc32_asm}:linux32:dlfcn:linux-shared:-fPIC::.so.\$(SHLIB_MAJOR).\$(SHLIB_MINOR)",
+"debug-oh-linux-ppc32-gcc",  "gcc:-DBN_DEBUG -DREF_CHECK -DCONF_DEBUG -DCRYPTO_MDEBUG -DB_ENDIAN -DTERMIO -DOPENSSL_NO_SCTP -g -Wall::-D_REENTRANT::-ldl:BN_LLONG RC4_CHAR RC4_CHUNK DES_RISC1 DES_UNROLL:${ppc32_asm}:linux32:dlfcn:linux-shared:-fPIC::.so.\$(SHLIB_MAJOR).\$(SHLIB_MINOR)",
+# RTEMS/FreeRTOS
+"oh-core-ppc32-rtems", "powerpc-rtems4.11-gcc:-O3 -Wall -DNO_SYSLOG -DOPENSSL_NO_SCTP -DNO_SYS_UN_H -DTERMIOS -DOPENSSL_IMPLEMENTS_strncasecmp -DOPENSSL_NO_SOCK::-D_REENTRANT:CORE_PLATFORM:",
+"debug-oh-core-ppc32-rtems", "powerpc-rtems4.11-gcc:-DBN_DEBUG -DCONF_DEBUG -DCRYPTO_MDEBUG -g -Wall -DNO_SYSLOG -DOPENSSL_NO_SCTP -DNO_SYS_UN_H -DTERMIOS -DOPENSSL_IMPLEMENTS_strncasecmp -DOPENSSL_NO_SOCK::-D_REENTRANT:CORE_PLATFORM:",
+"oh-core-armv5-rtems", "arm-rtemseabi4.11-gcc:-march=armv5te -O3 -Wall -DNO_SYSLOG -DOPENSSL_NO_SCTP -DL_ENDIAN -DOPENSSL_IMPLEMENTS_strncasecmp::-D_REENTRANT:CORE_PLATFORM:",
+"debug-oh-core-armv5-rtems", "arm-rtemseabi4.11-gcc:-DBN_DEBUG -DCONF_DEBUG -DCRYPTO_MDEBUG -march=armv5te -g -Wall -DNO_SYSLOG -DOPENSSL_NO_SCTP -DL_ENDIAN -DOPENSSL_IMPLEMENTS_strncasecmp::-D_REENTRANT:CORE_PLATFORM:",
+# Windows
+"oh-windows-x86-vc","cl:-W3 -WX -Gs0 -GF -Gy -nologo -DOPENSSL_SYSNAME_WIN32 -DWIN32_LEAN_AND_MEAN -DL_ENDIAN -D_CRT_SECURE_NO_DEPRECATE:::WIN32::BN_LLONG RC4_INDEX EXPORT_VAR_AS_FN ${x86_gcc_opts}:${x86_asm}:win32n:win32",
+"debug-oh-windows-x86-vc","cl:-W3 -WX -Gs0 -GF -Gy -Zi -nologo -DOPENSSL_SYSNAME_WIN32 -DWIN32_LEAN_AND_MEAN -DL_ENDIAN -D_CRT_SECURE_NO_DEPRECATE:::WIN32::BN_LLONG RC4_INDEX EXPORT_VAR_AS_FN ${x86_gcc_opts}:${x86_asm}:win32n:win32",
+"oh-windows-x64-vc","cl:-W3 -Gs0 -Gy -nologo -DOPENSSL_SYSNAME_WIN32 -DWIN32_LEAN_AND_MEAN -DL_ENDIAN -DUNICODE -D_UNICODE -D_CRT_SECURE_NO_DEPRECATE:::WIN64A::SIXTY_FOUR_BIT RC4_CHUNK_LL DES_INT EXPORT_VAR_AS_FN:x86_64cpuid.o:bn_asm.o x86_64-mont.o::aes-x86_64.o::md5-x86_64.o:sha1-x86_64.o sha256-x86_64.o sha512-x86_64.o::rc4-x86_64.o:::wp-x86_64.o:cmll-x86_64.o cmll_misc.o:auto:win32",
+"debug-oh-windows-x64-vc","cl:-W3 -Gs0 -Gy -Zi -nologo -DOPENSSL_SYSNAME_WIN32 -DWIN32_LEAN_AND_MEAN -DL_ENDIAN -DUNICODE -D_UNICODE -D_CRT_SECURE_NO_DEPRECATE:::WIN64A::SIXTY_FOUR_BIT RC4_CHUNK_LL DES_INT EXPORT_VAR_AS_FN:x86_64cpuid.o:bn_asm.o x86_64-mont.o::aes-x86_64.o::md5-x86_64.o:sha1-x86_64.o sha256-x86_64.o sha512-x86_64.o::rc4-x86_64.o:::wp-x86_64.o:cmll-x86_64.o cmll_misc.o:auto:win32",
+# Mac
+"oh-mac-x86-clang","clang:-arch i386 -O3 -fomit-frame-pointer -fPIC -fno-common -DL_ENDIAN::-D_REENTRANT:MACOSX:-Wl,-search_paths_first%:BN_LLONG RC4_INT RC4_CHUNK DES_UNROLL BF_PTR:${x86_asm}:macosx:dlfcn:darwin-shared:-fPIC -fno-common:-arch i386 -dynamiclib:.\$(SHLIB_MAJOR).\$(SHLIB_MINOR).dylib",
+"debug-oh-mac-x86-clang","clang:-arch i386 -g3 -fPIC -fno-common -DBN_DEBUG -DREF_CHECK -DCONF_DEBUG -DCRYPTO_MDEBUG -DL_ENDIAN::-D_REENTRANT:MACOSX:-Wl,-search_paths_first%:BN_LLONG RC4_INT RC4_CHUNK DES_UNROLL BF_PTR:${x86_asm}:macosx:dlfcn:darwin-shared:-fPIC -fno-common:-arch i386 -dynamiclib:.\$(SHLIB_MAJOR).\$(SHLIB_MINOR).dylib",
+"oh-mac-x64-clang","clang:-arch x86_64 -O3 -fPIC -fno-common -DL_ENDIAN -DMD32_REG_T=int -Wall::-D_REENTRANT:MACOSX:-Wl,-search_paths_first%:SIXTY_FOUR_BIT_LONG RC4_CHAR RC4_CHUNK DES_INT DES_UNROLL:${x86_64_asm}:macosx:dlfcn:darwin-shared:-fPIC -fno-common:-arch x86_64 -dynamiclib:.\$(SHLIB_MAJOR).\$(SHLIB_MINOR).dylib",
+"debug-oh-mac-x64-clang","clang:-arch x86_64 -g3 -fPIC -fno-common -DBN_DEBUG -DREF_CHECK -DCONF_DEBUG -DCRYPTO_MDEBUG -DL_ENDIAN -DMD32_REG_T=int -Wall::-D_REENTRANT:MACOSX:-Wl,-search_paths_first%:SIXTY_FOUR_BIT_LONG RC4_CHAR RC4_CHUNK DES_INT DES_UNROLL:${x86_64_asm}:macosx:dlfcn:darwin-shared:-fPIC -fno-common:-arch x86_64 -dynamiclib:.\$(SHLIB_MAJOR).\$(SHLIB_MINOR).dylib",
+
+
 # Our development configs
 "purify",	"purify gcc:-g -DPURIFY -Wall::(unknown)::-lsocket -lnsl::::",
 "debug",	"gcc:-DBN_DEBUG -DREF_CHECK -DCONF_DEBUG -DBN_CTX_DEBUG -DCRYPTO_MDEBUG -DOPENSSL_NO_ASM -ggdb -g2 -Wformat -Wshadow -Wmissing-prototypes -Wmissing-declarations -Werror::(unknown)::-lefence::::",
