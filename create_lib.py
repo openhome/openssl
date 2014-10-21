@@ -189,7 +189,7 @@ def bundle_name(aArch, aDebug, aVer):
     debugTag = '-Release'
     if (aDebug == True):
         debugTag = '-Debug'
-    return os.path.join(builddir, openssl+'-'+aVer+'-'+aArch+debugTag+'.tar.bz2')
+    return os.path.join(builddir, 'openssl-'+aVer+'-'+aArch+debugTag+'.tar.bz2')
 
 def create_bundle(aArch, aVer, aRelease):
     print 'Packaging OpenSSL for', aArch
