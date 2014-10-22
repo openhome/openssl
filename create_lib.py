@@ -128,7 +128,7 @@ def configure(aArch, aRelease):
         options = options + ['no-asm']
     elif (aArch == 'Windows-x64'):
         platform = 'oh-windows-x64-vc'
-        options = ['no-asm']
+        options = options + ['no-asm']
     elif (aArch == 'Linux-x86'):
         platform = 'oh-linux-x86-gcc'
     elif (aArch == 'Linux-x64'):
@@ -162,6 +162,19 @@ def configure(aArch, aRelease):
         subprocess.check_call([os.path.join('ms', 'do_ms')], shell=True)
     elif (aArch == 'Windows-x64'):
         subprocess.check_call([os.path.join('ms', 'do_win64a')], shell=True)
+
+    if (aArch in ['Windows-x86', 'Windows-x64']):
+        # Create openssl*/tmp32 and openssl*/tmp32.dbg dirs because clean will
+        # return an error status on Windows if we try to clean with no previous
+        # build.
+        if (aRelease == 'debug'):
+            tmpdirdbg = os.path.join(os.getcwd(), 'tmp32.dbg')
+            if not os.path.exists(tmpdirdbg):
+                os.makedirs(tmpdirdbg)
+        else:
+            tmpdir = os.path.join(os.getcwd(), 'tmp32')
+            if not os.path.exists(tmpdir):
+                os.makedirs(tmpdir)
 
 def build(aArch):
     make_cmd = []
