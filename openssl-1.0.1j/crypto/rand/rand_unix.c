@@ -118,6 +118,25 @@
 
 #if !(defined(OPENSSL_SYS_WINDOWS) || defined(OPENSSL_SYS_WIN32) || defined(OPENSSL_SYS_VMS) || defined(OPENSSL_SYS_OS2) || defined(OPENSSL_SYS_VXWORKS) || defined(OPENSSL_SYS_NETWARE))
 
+#if defined(OPENSSL_SYSNAME_CORE_PLATFORM)
+int RAND_poll(void)
+{
+    long rnd = 0, i;
+    unsigned char buf[ENTROPY_NEEDED];
+
+    for (i = 0; i < sizeof(buf); i++) {
+        if (i % 4 == 0)
+            rnd = rand();
+        buf[i] = rnd;
+        rnd >>= 8;
+    }
+    RAND_add(buf, sizeof(buf), ENTROPY_NEEDED);
+    memset(buf, 0, sizeof(buf));
+
+    return 1;
+}
+#else
+
 #include <sys/types.h>
 #include <sys/time.h>
 #include <sys/times.h>
@@ -420,6 +439,9 @@ int RAND_poll(void)
 }
 
 #endif /* defined(__OpenBSD__) */
+
+#endif /* defined(OPENSSL_SYSNAME_CORE_PLATFORM) */
+
 #endif /* !(defined(OPENSSL_SYS_WINDOWS) || defined(OPENSSL_SYS_WIN32) || defined(OPENSSL_SYS_VMS) || defined(OPENSSL_SYS_OS2) || defined(OPENSSL_SYS_VXWORKS) || defined(OPENSSL_SYS_NETWARE)) */
 
 
