@@ -464,6 +464,7 @@ int dtls1_handle_timeout(SSL *s)
 	return dtls1_retransmit_buffered_messages(s);
 	}
 
+#if !defined(OPENSSL_SYSNAME_CORE_PLATFORM)
 static void get_current_time(struct timeval *t)
 {
 #ifdef OPENSSL_SYS_WIN32
@@ -480,6 +481,7 @@ static void get_current_time(struct timeval *t)
 	gettimeofday(t, NULL);
 #endif
 }
+#endif /* !defined(OPENSSL_SYSNAME_CORE_PLATFORM) */
 
 int dtls1_listen(SSL *s, struct sockaddr *client)
 	{
