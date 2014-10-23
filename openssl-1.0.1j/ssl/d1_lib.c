@@ -66,6 +66,10 @@
 #include <sys/timeb.h>
 #endif
 
+#if defined(OPENSSL_SYSNAME_CORE_PLATFORM)
+#include <assert.h>
+#endif
+
 static void get_current_time(struct timeval *t);
 const char dtls1_version_str[]="DTLSv1" OPENSSL_VERSION_PTEXT;
 int dtls1_listen(SSL *s, struct sockaddr *client);
@@ -464,7 +468,14 @@ int dtls1_handle_timeout(SSL *s)
 	return dtls1_retransmit_buffered_messages(s);
 	}
 
-#if !defined(OPENSSL_SYSNAME_CORE_PLATFORM)
+#if defined(OPENSSL_SYSNAME_CORE_PLATFORM)
+int gettimeofday(struct timeval* tv, void* tz)
+{
+    assert(0);
+    return -1;
+}
+#endif
+
 static void get_current_time(struct timeval *t)
 {
 #ifdef OPENSSL_SYS_WIN32
@@ -481,7 +492,6 @@ static void get_current_time(struct timeval *t)
 	gettimeofday(t, NULL);
 #endif
 }
-#endif /* !defined(OPENSSL_SYSNAME_CORE_PLATFORM) */
 
 int dtls1_listen(SSL *s, struct sockaddr *client)
 	{
