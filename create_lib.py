@@ -297,7 +297,7 @@ def platform_specific_path(aArch, aPackageFile):
         return aPackageFile
 
 def publish(aArch, aPackageFile):
-    bundle_dest = 'artifacts@core.linn.co.uk:/home/artifacts/public_html/artifacts/openssl/'
+    bundle_dest = 'releases@www.openhome.org:~/www/artifacts/openssl/'
     print('scp(' + aPackageFile + ', ' + bundle_dest + ')')
     scp(aPackageFile, bundle_dest)
 
