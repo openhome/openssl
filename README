@@ -10,6 +10,7 @@ Linux-x86
 Linux-x64
 Linux-ppc32
 Linux-armhf
+Linux-mipsel
 Mac-x86
 Mac-x64
 Core-armv5

@@ -140,6 +140,9 @@ def configure(aArch, aRelease):
     elif (aArch == 'Linux-armhf'):
         platform = 'oh-linux-armhf-gcc'
         options = options + ['-fexceptions', '-pipe', '-g']
+    elif (aArch == 'Linux-mipsel'):
+        platform = 'oh-linux-mipsel-gcc'
+        options = options + ['-fexceptions', '-pipe', '-g']
     elif (aArch == 'Linux-ppc32'):
         platform = 'oh-linux-ppc32-gcc'
     elif (aArch == 'Mac-x64'):
@@ -183,7 +186,7 @@ def build(aArch):
     make_cmd = []
     if (aArch in ['Windows-x86', 'Windows-x64']):
         make_cmd = ['nmake', '-f', os.path.join('ms', 'nt.mak'), 'install']
-    elif (aArch in ['Linux-x86', 'Linux-x64', 'Linux-ARM', 'Linux-armhf', 'Linux-ppc32', 'Mac-x86', 'Mac-x64', 'Core-armv5', 'Core-armv6', 'Core-ppc32']):
+    elif (aArch in ['Linux-x86', 'Linux-x64', 'Linux-ARM', 'Linux-armhf', 'Linux-mipsel', 'Linux-ppc32', 'Mac-x86', 'Mac-x64', 'Core-armv5', 'Core-armv6', 'Core-ppc32']):
         if (aArch in ['Core-armv5', 'Core-armv6']):
             os.environ['PATH'] += os.pathsep + '/opt/rtems-4.11/bin'
         elif (aArch == 'Core-ppc32'):
@@ -218,7 +221,7 @@ def create_bundle(aArch, aVer, aRelease):
     if (aArch in ['Windows-x86', 'Windows-x64']):
         cryptolib = 'libeay32.lib'
         ssllib = 'ssleay32.lib'
-    elif (aArch in ['Linux-x86', 'Linux-x64', 'Linux-ARM', 'Linux-armhf', 'Linux-ppc32', 'Mac-x64', 'Mac-x86', 'Core-armv5', 'Core-armv6', 'Core-ppc32']):
+    elif (aArch in ['Linux-x86', 'Linux-x64', 'Linux-ARM', 'Linux-armhf', 'Linux-mipsel', 'Linux-ppc32', 'Mac-x64', 'Mac-x86', 'Core-armv5', 'Core-armv6', 'Core-ppc32']):
         cryptolib = 'libcrypto.a'
         ssllib = 'libssl.a'
     else:
@@ -249,7 +252,7 @@ def clean(aArch):
     make_cmd = []
     if (aArch in ['Windows-x86', 'Windows-x64']):
         make_cmd = ['nmake', '-f', os.path.join('ms', 'nt.mak'), 'clean']
-    elif (aArch in ['Linux-x86', 'Linux-x64', 'Linux-ARM', 'Linux-armhf', 'Linux-ppc32', 'Mac-x86', 'Mac-x64', 'Core-armv5', 'Core-armv6', 'Core-ppc32']):
+    elif (aArch in ['Linux-x86', 'Linux-x64', 'Linux-ARM', 'Linux-armhf', 'Linux-mipsel', 'Linux-ppc32', 'Mac-x86', 'Mac-x64', 'Core-armv5', 'Core-armv6', 'Core-ppc32']):
         make_cmd = ['make', 'clean']
     else:
         print 'Error: clean unknown arch:', aArch
@@ -307,7 +310,7 @@ def publish(aArch, aPackageFile):
     scp(aPackageFile, bundle_dest)
 
 if __name__ == "__main__":
-    avail_arch = ['Windows-x86', 'Windows-x64', 'Linux-x86', 'Linux-x64', 'Linux-ARM', 'Linux-armhf', 'Linux-ppc32', 'Mac-x86', 'Mac-x64', 'Core-armv5', 'Core-armv6', 'Core-ppc32']
+    avail_arch = ['Windows-x86', 'Windows-x64', 'Linux-x86', 'Linux-x64', 'Linux-ARM', 'Linux-armhf', 'Linux-mipsel', 'Linux-ppc32', 'Mac-x86', 'Mac-x64', 'Core-armv5', 'Core-armv6', 'Core-ppc32']
     try:
         os.chdir(openssl)
     except OSError:
