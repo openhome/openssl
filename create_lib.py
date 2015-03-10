@@ -311,6 +311,9 @@ def publish(aArch, aPackageFile):
 
 if __name__ == "__main__":
     avail_arch = ['Windows-x86', 'Windows-x64', 'Linux-x86', 'Linux-x64', 'Linux-ARM', 'Linux-armhf', 'Linux-mipsel', 'Linux-ppc32', 'Mac-x86', 'Mac-x64', 'Core-armv5', 'Core-armv6', 'Core-ppc32']
+
+    os.chdir(os.path.dirname(sys.argv[0]))
+
     try:
         os.chdir(openssl)
     except OSError:
